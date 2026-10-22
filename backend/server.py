@@ -152,7 +152,19 @@ async def current_user(request: Request) -> dict:
     user = await db.users.find_one({"id": data.get("sub")}, {"_id": 0})
     if not user:
         raise HTTPException(401, "Sessão expirada.")
-    return user
+    if trial_expired(user):
+        path = request.url.path
+        if path not in ("/api/store", "/api/mercadopago/checkout"):
+            raise HTTPException(
+                status_code=402,
+                detail={"code": "TRIAL_EXPIRED", "message": "Seu teste grátis terminou. Assine por R$ 19,90 para continuar usando os recursos."}
+            )
+        if path == "/api/store" and request.method.upper() != "GET":
+            raise HTTPException(
+                status_code=402,
+                detail={"code": "TRIAL_EXPIRED", "message": "Seu teste grátis terminou. Assine por R$ 19,90 para continuar usando os recursos."}
+            )
+        return user
 
 
 async def send_mail(to: str, subject: str, html: str):
@@ -172,8 +184,44 @@ async def send_mail(to: str, subject: str, html: str):
         log.exception("Falha ao enviar e-mail")
 
 
+TRIAL_DAYS = 7
+
 def trial_ms(u: dict) -> int:
-    return int(u["created_at"].timestamp() * 1000)
+    created = u.get("created_at")
+    if not created:
+        return 0
+    if isinstance(created, str):
+        try:
+            created = datetime.fromisoformat(created.replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            return 0
+    if created.tzinfo is None:
+        created = created.replace(tzinfo=timezone.utc)
+    return int(created.timestamp() * 1000)
+
+
+def trial_expired(u: dict) -> bool:
+    if str(u.get("plan", "free")).lower() == "pro":
+        expiry = u.get("plan_expires_at")
+        if expiry:
+            if isinstance(expiry, str):
+                try:
+                    expiry = datetime.fromisoformat(expiry.replace("Z", "+00:00"))
+                except (ValueError, TypeError):
+                    return True
+            if expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+            return datetime.now(timezone.utc) >= expiry
+        return False
+    started = trial_ms(u)
+    return not started or time.time() * 1000 >= started + TRIAL_DAYS * 86400000
+
+
+def trial_expired(u: dict) -> bool:
+    if u.get("plan") == "pro":
+        return False
+    started = trial_ms(u)
+    return not started or time.time() * 1000 >= started + TRIAL_DAYS * 24 * 60 * 60 * 1000
 
 
 # ---------------------------------------------------------------- rotas básicas

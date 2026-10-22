@@ -149,6 +149,12 @@ textarea:focus{outline:2px solid var(--g);outline-offset:2px}
 .alert{display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:var(--warn);color:var(--warnt);border-radius:1.125rem;padding:.75rem 1rem;font-size:.875rem;font-weight:600;margin-bottom:.75rem}
 .alert .lnk{padding:0;color:var(--warnt);text-decoration:underline;white-space:nowrap}
 @media(min-width:760px){.hero{padding:1.5rem}.hero .big{font-size:3rem}}
+
+.meta{background:var(--card);border:1.5px solid var(--line);border-radius:1.5rem;padding:1rem 1.125rem;margin-bottom:.75rem}
+.mbar{height:.625rem;border-radius:6.1875rem;background:var(--line);overflow:hidden;margin:.625rem 0 .5rem}
+.mbar i{display:block;height:100%;border-radius:6.1875rem;background:var(--g)}
+.meta p{font-size:.8125rem;color:var(--mute)}
+button.empty{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 </style>
 </head>
 <body>
@@ -363,12 +369,14 @@ const delIns=async i=>{if(!await cf("Remover insumo?"))return;INS().splice(i,1);
 const usedBy=g=>S.products.filter(p=>[...(p.items||[]),...(p.deliv||[])].some(t=>t.ref===g.id));
 async function buy(i){const g=INS()[i],r=await mdl("Registrar compra: "+esc(g.n||"insumo"),`<label>Quantidade comprada (${US[g.u]||g.u})</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 2"><label>Valor pago por essa compra (R$)</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 117">`,"Registrar");if(!r)return;const q=num(r[0]),v=num(r[1]);if(!q||!v){info("Preencha a quantidade e o valor pago.");return}const o=num(g.yield)?num(g.pack)/num(g.yield):0,pa=usedBy(g),ca=pa.map(x=>cost(x));g.q=num(g.q)+q;g.pack=v;g.yield=q;HIS().push({id:g.id,n:g.n,o,v:v/q,u:g.u,at:Date.now(),pc:pa.map((x,j)=>({n:x.name,a:ca[j],b:cost(x)}))});save();render()}
 const gm=(p)=>{const o=hasOwn(p),c=calc(p,"own",o),pr=num(p.sell)||c.price,l=pf(p,"own",o,pr);return{p,l,r:pr>0?l/pr*100:NaN}};
+async function setMeta(){const r=await mdl("Meta de lucro do mês",`<label>Quanto de lucro você quer fazer por mês (R$)</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 3000" value="${num(S.meta)||""}">`,"Salvar");if(!r)return;S.meta=Math.max(0,num(r[0]));save();render()}
 Object.assign(VIEWS,{
 dash:()=>{const m=U.mes,rec=monthRec(m),des=monthDes(m),luc=rec-des,mg=rec?luc/rec*100:0,ml=num(S.meta),PL=S.products.filter(ok).map(gm).filter(x=>isFinite(x.l)).sort((a,b)=>b.l-a.l),a=PL.reduce((t,x)=>t+x.l,0)/(PL.length||1),low=INS().filter(g=>num(g.min)>0&&num(g.q)<=num(g.min));
 const tot=rec+des,pa=tot>0?rec/tot*100:0,neg=luc<0,
 row=(x,i,w)=>`<div class="rk"><span class="n ${w?"w":""}">${i+1}</span><span class="nm">${esc(x.p.name)}</span><span class="vl">${R(x.l)}<small class="mute" style="font-weight:500;font-size:.75rem"> /un.</small></span><div class="m ${w?"w":""}"><u><i style="width:${Math.max(3,Math.min(100,Math.abs(x.r)))}%"></i></u><small>${pct(x.r)}</small></div></div>`;
 return hd("Início",MESF[m]+" de "+F().ano)+mch()+(low.length?`<div class="alert"><span>Estoque baixo: ${low.slice(0,3).map(g=>esc(g.n||"sem nome")).join(", ")}${low.length>3?" e mais "+(low.length-3):""}</span><button class="lnk" onclick="go('stock')">Ver</button></div>`:"")
 +`<div class="hero"><div class="lbl"><span>Lucro estimado de ${MESF[m].toLowerCase()}</span><span class="badge ${neg?"neg":""}">Margem ${pct(mg)}</span></div><b class="big ${neg?"neg":""}">${R(luc)}</b><div class="split" aria-hidden="true"><i class="a" style="width:${tot>0?pa:0}%"></i><i class="b" style="width:${tot>0?100-pa:0}%"></i></div><div class="flow"><div><span>Faturamento</span><b>${R(rec)}</b></div><div class="d"><span>Despesas e custos</span><b>${R(des)}</b></div></div></div>`
++(ml>0?`<div class="meta"><div class="price"><b>Meta de lucro</b><button class="lnk" style="padding:0" onclick="setMeta()">Alterar</button></div><div class="mbar"><i style="width:${Math.max(0,Math.min(100,luc/ml*100))}%"></i></div><p>${luc>=ml?"Meta batida!":"Faltam "+R(ml-luc)+(a>0?" · cerca de "+Math.ceil((ml-luc)/a)+" vendas":"")} · ${R(luc)} de ${R(ml)}</p></div>`:`<button class="empty" onclick="setMeta()"><p>Defina uma meta de lucro para acompanhar o mês.</p><span class="lnk" style="padding:0">Definir</span></button>`)
 +(tot<=0?`<div class="empty"><p>Nenhuma venda ou despesa neste mês.</p><button class="btn" onclick="go('sales')">Registrar venda</button></div>`:"")
 +`<div class="sec"><h3>Produtos mais rentáveis</h3><p class="sub">Lucro por unidade vendida e margem</p>${PL.length?PL.slice(0,3).map((x,i)=>row(x,i,0)).join(""):`<p class="mute sm" style="padding:.75rem 0">Preencha os preços dos produtos para ver o ranking.</p>`}</div>`
 +(PL.length>1?`<div class="sec"><h3>Atenção: menor lucro</h3><p class="sub">Pode ser preço baixo demais.</p>${PL.slice(-2).reverse().map((x,i)=>row(x,i,x.l<=0||x.r<15)).join("")}</div>`:"")},

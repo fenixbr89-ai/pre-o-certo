@@ -188,6 +188,18 @@ html[data-theme="dark"] svg text{fill:var(--ink)}
 @media(prefers-reduced-motion:reduce){#app .card{transition:none}}
 </style>
 
+
+<style id="pc-hide-floating-theme">
+button[aria-label*="tema" i],
+button[title*="tema" i],
+button[aria-label*="dark" i],
+button[title*="dark" i],
+#theme-toggle,#dark-toggle,#themeToggle,#darkToggle,
+.theme-toggle,.dark-toggle,.floating-theme-toggle {
+  display:none !important;
+}
+</style>
+
 </head>
 <body>
 <div id="app"></div>

@@ -1,4 +1,4 @@
-"""Preço Certo — API (FastAPI + MongoDB + Stripe + Resend + Login com Google).
+"""Preço Certo — API (FastAPI + MongoDB + Stripe + Resend).
 
 O front (public/index.html) chama estes endpoints, sempre sob /api.
 Variáveis de ambiente: veja .env.example e o README.md.
@@ -32,7 +32,6 @@ MONGO_URL = os.environ.get("MONGO_URL", "")
 DB_NAME = os.environ.get("DB_NAME", "precocerto")
 JWT_SECRET = os.environ.get("JWT_SECRET", "")
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:3000").rstrip("/")
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 MAIL_FROM = os.environ.get("MAIL_FROM", "Preço Certo <onboarding@resend.dev>")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")  # recebe as sugestões (opcional)
@@ -183,11 +182,6 @@ async def health():
     return {"ok": True}
 
 
-@app.get("/api/config")
-async def config():
-    return {"googleClientId": GOOGLE_CLIENT_ID}
-
-
 # ---------------------------------------------------------------- contas
 @app.post("/api/signup")
 async def signup(request: Request):
@@ -224,40 +218,6 @@ async def login(request: Request):
     ok = bool(user and user.get("password_hash")) and await asyncio.to_thread(check_pw, pw, user["password_hash"])
     if not ok:
         raise HTTPException(401, "E-mail ou senha incorretos.")
-    return session(user)
-
-
-def _verify_google(credential: str) -> dict:
-    from google.auth.transport import requests as g_requests
-    from google.oauth2 import id_token
-
-    return id_token.verify_oauth2_token(credential, g_requests.Request(), GOOGLE_CLIENT_ID)
-
-
-@app.post("/api/google")
-async def google_login(request: Request):
-    rate_limit(f"google:{ip_of(request)}", 30, 600)
-    if not GOOGLE_CLIENT_ID:
-        raise HTTPException(503, "Login com Google não configurado.")
-    b = await body_of(request)
-    credential = str(b.get("credential") or "")
-    try:
-        info = await asyncio.to_thread(_verify_google, credential)
-    except Exception:
-        raise HTTPException(401, "Não foi possível entrar com o Google. Tente de novo.")
-    email = norm_email(info.get("email"))
-    if not email or not info.get("email_verified"):
-        raise HTTPException(401, "O e-mail da conta Google não está verificado.")
-    user = await db.users.find_one({"email": email}, {"_id": 0})
-    if not user:
-        user = {
-            "id": uuid.uuid4().hex, "email": email, "name": clean(info.get("name"), 80),
-            "password_hash": None, "google_sub": info.get("sub"), "plan": "free", "created_at": now(),
-        }
-        try:
-            await db.users.insert_one(dict(user))
-        except Exception:
-            user = await db.users.find_one({"email": email}, {"_id": 0})
     return session(user)
 
 

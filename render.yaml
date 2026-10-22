@@ -19,8 +19,6 @@ services:
         generateValue: true
       - key: SITE_URL
         sync: false
-      - key: GOOGLE_CLIENT_ID
-        sync: false
       - key: RESEND_API_KEY
         sync: false
       - key: MAIL_FROM

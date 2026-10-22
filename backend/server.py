@@ -286,6 +286,7 @@ async def get_store(request: Request):
     # Plano e teste grátis vêm SEMPRE do servidor, nunca do que o navegador envia.
     data["plan"] = "pro" if user.get("plan") == "pro" else "free"
     data["trial"] = trial_ms(user)
+    data["photo"] = user.get("photo") or ""
     return data
 
 
@@ -294,7 +295,7 @@ async def put_store(request: Request):
     user = await current_user(request)
     rate_limit(f"store:{user['id']}", 120, 60)
     data = await body_of(request)
-    for k in ("plan", "trial", "since"):
+    for k in ("plan", "trial", "since", "photo"):
         data.pop(k, None)
     raw = json.dumps(data, ensure_ascii=False)
     if len(raw.encode()) > MAX_STORE_BYTES:
@@ -302,6 +303,28 @@ async def put_store(request: Request):
     await db.stores.update_one(
         {"user_id": user["id"]}, {"$set": {"json": raw, "updated_at": now()}}, upsert=True
     )
+    return {"ok": True}
+
+
+@app.post("/api/photo")
+async def set_photo(request: Request):
+    import base64
+
+    user = await current_user(request)
+    rate_limit(f"photo:{user['id']}", 20, 600)
+    b = await body_of(request)
+    photo = str(b.get("photo") or "")
+    if photo:
+        head = "data:image/jpeg;base64,"
+        ok = photo.startswith(head) and len(photo) <= 200_000
+        if ok:
+            try:
+                base64.b64decode(photo[len(head):], validate=True)
+            except Exception:
+                ok = False
+        if not ok:
+            raise HTTPException(400, "Foto inválida ou grande demais.")
+    await db.users.update_one({"id": user["id"]}, {"$set": {"photo": photo}})
     return {"ok": True}
 
 

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Preço Certo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--s:1;--bg:#f4f4f2;--card:#fff;--ink:#17181a;--mute:#6b6f76;--line:#e4e5e2;--g:#059669;--gl:#d1fae5;--gd:#064e3b;--dark:#1a1b1d;--warn:#fef3c7;--warnt:#b45309;--red:#dc2626}
+html{font-size:calc(1rem*var(--s))}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:0.9375rem;-webkit-font-smoothing:antialiased}
+#app{max-width:520px;margin:0 auto;min-height:100vh;padding:calc(0.625rem + env(safe-area-inset-top,0px)) 1.125rem 6rem}
+#app.full{padding:0;background:var(--dark)}
+h2{font-size:1.5625rem;line-height:1.15;letter-spacing:-.035em;font-weight:800;margin:0.375rem 0 0.25rem}
+h3{font-size:1.125rem;letter-spacing:-.02em;font-weight:800;margin:1.25rem 0 0.625rem}
+p{margin:0}.mute{color:var(--mute)}.sm{font-size:0.8125rem}
+svg{display:block;flex:none}
+.back{display:flex;align-items:center;gap:2px;background:none;border:0;color:var(--g);font:600 1rem "Plus Jakarta Sans",sans-serif;padding:0.375rem 0;cursor:pointer}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:1.125rem;padding:1rem 1.0625rem;margin-bottom:0.75rem;width:100%;text-align:left;font-family:inherit;color:inherit;display:block;position:relative}
+button.card{cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.grid .card{margin:0;min-height:7.375rem;display:flex;flex-direction:column;justify-content:space-between;font-weight:700;font-size:1.0625rem;letter-spacing:-.015em;padding:1.0625rem}
+.ic{width:2.75rem;height:2.75rem;border-radius:0.75rem;background:var(--gl);color:var(--gd);display:grid;place-items:center;margin-bottom:0.875rem}
+.btn{display:flex;gap:0.625rem;align-items:center;justify-content:center;width:100%;border:0;border-radius:0.875rem;background:var(--g);color:#fff;font:700 1.125rem "Plus Jakarta Sans",sans-serif;letter-spacing:-.015em;height:3.25rem;cursor:pointer}
+.btn.sec{background:var(--card);color:var(--ink);border:1.5px solid var(--line);font-size:0.9375rem;height:2.75rem;font-weight:600}
+.btn:disabled{opacity:.6}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:0.75rem 1.125rem calc(0.75rem + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line)}
+.bar>div{max-width:520px;margin:0 auto}
+.hd{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);margin:calc(-0.625rem - env(safe-area-inset-top,0px)) -1.125rem 1rem;padding:calc(0.625rem + env(safe-area-inset-top,0px)) 1.125rem 0.75rem}
+.avatar{width:2.75rem;height:2.75rem;border-radius:50%;background:var(--gl);color:var(--gd);display:grid;place-items:center;border:0;cursor:pointer;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.row{display:flex;gap:0.75rem}.row>*{flex:1;min-width:0}
+.pill{background:var(--dark);color:#fff;border-radius:1.25rem;padding:0.875rem 1rem;margin:0.25rem 0 0.75rem;display:flex;align-items:center;gap:0.75rem;width:100%;border:0;font-family:inherit;text-align:left;min-height:4.4375rem}
+.pill b{font-size:1.125rem;letter-spacing:-.02em;display:block}.pill small{opacity:.65;font-size:0.8125rem}
+.pill svg:first-child{color:#34d399}.pill .go{margin-left:auto}
+.cost{font-size:1.5rem;font-weight:800;letter-spacing:-.03em}.sell{color:var(--g);font-weight:600;font-size:0.8125rem}
+.tag{display:inline-flex;gap:0.375rem;align-items:center;background:var(--warn);color:var(--warnt);border-radius:6.1875rem;padding:0.375rem 0.75rem;font-size:0.8125rem;font-weight:600}
+label{display:block;font-size:0.875rem;color:var(--mute);margin:0.75rem 0 0.375rem}
+input[type=text],input[type=number],input[type=email],input[type=password]{width:100%;height:3rem;font:500 1.0625rem "Plus Jakarta Sans",sans-serif;padding:0 0.9375rem;border-radius:0.875rem;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+input:focus,button:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.steps{display:flex;gap:0.5rem;margin:0.75rem 0 1.125rem}
+.steps div{flex:1;display:flex;gap:0.5rem;align-items:center;padding:0 0.625rem;height:2.75rem;border-radius:0.875rem;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:0.9375rem;color:var(--mute)}
+.steps i{font-style:normal;width:1.3125rem;height:1.3125rem;border-radius:50%;background:var(--line);display:grid;place-items:center;font-size:0.75rem;color:var(--ink)}
+.steps .on{background:var(--gl);border-color:var(--g);color:var(--gd)}.steps .on i{background:var(--g);color:#fff}
+.kick{color:var(--g);font-weight:700;font-size:0.8125rem;letter-spacing:.04em;text-transform:uppercase;margin:2px 0 0.375rem}
+.total{background:var(--dark);color:#fff;border-radius:1.125rem;padding:1rem 1.125rem;margin:1rem 0 0;display:flex;justify-content:space-between;align-items:center;min-height:5.625rem}
+.total span{opacity:.7;font-size:0.875rem;display:block}.total b{font-size:2rem;letter-spacing:-.04em;line-height:1.15}
+.okc{width:1.4375rem;height:1.4375rem;border-radius:50%;background:#34d399;color:var(--dark);display:grid;place-items:center}
+.kind{display:inline-flex;gap:0.375rem;align-items:center;background:var(--gl);color:var(--gd);border:0;border-radius:6.1875rem;padding:0.375rem 0.75rem;font:700 0.875rem "Plus Jakarta Sans",sans-serif;cursor:pointer}
+.del{position:absolute;top:0.875rem;right:0.875rem;background:none;border:0;color:var(--red);cursor:pointer}.dup{position:absolute;top:0.875rem;right:3.25rem;background:none;border:0;color:var(--g);cursor:pointer}
+.chips{display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.75rem 0}
+.chip{border:1.5px solid var(--line);background:var(--card);padding:0.5625rem 1rem;border-radius:6.1875rem;font:600 0.9375rem "Plus Jakarta Sans",sans-serif;cursor:pointer}
+.chip.on{background:var(--g);border-color:var(--g);color:#fff}
+input[type=range]{width:100%;accent-color:var(--g);height:2.25rem}
+.big{font-size:2.75rem;font-weight:800;letter-spacing:-.04em}
+.price{display:flex;justify-content:space-between;align-items:center;gap:0.625rem}.price b.v{font-size:1.375rem;color:var(--g);letter-spacing:-.02em}
+.photo{position:relative;background:var(--dark);color:#fff;padding:0 1.5625rem}
+.photo:before{display:none}.art{display:block;margin:0 -1.5625rem;width:calc(100% + 3.125rem);height:auto;-webkit-mask-image:linear-gradient(#000 62%,transparent);mask-image:linear-gradient(#000 62%,transparent)}
+.photo h1{position:relative;font-size:2.375rem;line-height:1.1;letter-spacing:-.04em;font-weight:700;margin:-1.625rem 0 0.75rem}
+.photo p{font-size:1.0625rem;line-height:1.4;opacity:.88}
+.wel{color:#fff;padding:1.375rem 1.5625rem calc(1.75rem + env(safe-area-inset-bottom,0px))}
+.feat{display:flex;gap:0.75rem;align-items:center;margin:0.75rem 0;font-weight:500;font-size:0.9375rem;line-height:1.3;letter-spacing:-.01em}
+.feat span{width:2rem;height:2rem;border-radius:50%;background:#3a3c40;color:#34d399;display:grid;place-items:center;flex:none}
+.wel .btn{margin-top:1.125rem}
+.wel .note{text-align:center;color:#8a8d90;font-size:0.8125rem;margin-top:1rem}
+.err{background:#fee2e2;color:#991b1b;border-radius:0.875rem;padding:0.75rem 0.875rem;font-size:0.875rem;margin-top:0.875rem}
+.okm{background:var(--gl);color:var(--gd);border-radius:0.875rem;padding:0.75rem 0.875rem;font-size:0.875rem;margin-top:0.875rem}
+.lnk{background:none;border:0;color:var(--g);font:600 0.9375rem "Plus Jakarta Sans",sans-serif;cursor:pointer;padding:0.625rem 0}
+.or{display:flex;align-items:center;gap:0.75rem;color:var(--mute);font-size:0.8125rem;margin:1rem 0}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+select{width:100%;height:3rem;font:500 1.0625rem "Plus Jakarta Sans",sans-serif;padding:0 .5rem;border-radius:.875rem;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+label{white-space:nowrap}
+.in{position:relative}.in input{padding-right:2.4rem}.in i{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);font-style:normal;color:var(--mute);font-size:.8125rem;pointer-events:none}
+.in.pre input{padding-left:2.4rem;padding-right:.6rem}.in.pre i{left:.75rem;right:auto}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.nav>div{max-width:520px;margin:0 auto;display:flex}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--mute);font:600 11px "Plus Jakarta Sans",sans-serif;padding:6px 0;cursor:pointer}
+.nav button.on{color:var(--g)}
+#app.hasnav{padding-bottom:150px}
+.bar.up{bottom:calc(60px + env(safe-area-inset-bottom,0px))}
+.g{display:grid;gap:6px;align-items:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lb{font-size:11px;color:var(--mute);font-weight:600;white-space:nowrap}.tt{font-size:11px;white-space:nowrap}
+input.mini[type]{height:38px;font-size:14px;padding:0 8px;border-radius:10px;width:100%;min-width:0}
+.del2{background:none;border:0;color:var(--red);padding:0;display:grid;place-items:center;cursor:pointer}
+.mch{display:flex;gap:8px;overflow-x:auto;margin:6px -18px 0;padding:6px 18px}.mch .chip{flex:none}
+@media print{.noprint,.nav,.bar{display:none!important}body{background:#fff}}
+textarea{width:100%;min-height:8rem;font:500 1.0625rem "Plus Jakarta Sans",sans-serif;padding:.75rem .9375rem;border-radius:.875rem;border:1.5px solid var(--line);background:var(--card);color:var(--ink);resize:vertical}
+textarea:focus{outline:2px solid var(--g);outline-offset:2px}
+.faq details{background:var(--card);border:1.5px solid var(--line);border-radius:1.125rem;padding:.25rem 1.0625rem;margin-bottom:.625rem}
+.faq summary{cursor:pointer;font-weight:700;padding:.75rem 0;list-style:none;display:flex;justify-content:space-between;gap:.5rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--g);font-size:1.25rem;line-height:1}
+.faq details[open] summary::after{content:"\2212"}
+.faq details p{padding:0 0 .875rem;color:var(--mute);font-size:.9375rem;line-height:1.5}
+.doc h3{margin:1.25rem 0 .375rem}.doc p{color:var(--mute);font-size:.9375rem;line-height:1.55;margin-bottom:.5rem}
+#ck{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:.75rem .75rem calc(.75rem + env(safe-area-inset-bottom,0px))}
+#ck>div{max-width:520px;margin:0 auto;background:var(--card);border:1.5px solid var(--line);border-radius:1.125rem;padding:1rem;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+@media(min-width:1024px){
+#app{max-width:760px}
+#app.full{max-width:none}
+.photo,.wel{max-width:560px;margin:0 auto}
+#app.hasnav{max-width:1100px;margin:0 0 0 max(240px,calc((100vw - 860px)/2));padding-bottom:6rem}
+.grid{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:repeat(4,1fr)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.75rem}
+.pgrid .card{margin:0}
+.bar>div{max-width:760px}
+.nav{top:0;right:auto;width:240px;border-top:0;border-right:1px solid var(--line);padding:1.25rem .75rem}
+.nav>div{max-width:none;margin:0;flex-direction:column;gap:.25rem}
+.nav button{flex:none;flex-direction:row;gap:.75rem;justify-content:flex-start;font-size:.9375rem;padding:.75rem 1rem;border-radius:.875rem}
+.nav button.on{background:var(--gl)}
+.bar.up{bottom:0;left:240px}
+.bar.up>div{max-width:1060px}
+}
+
+/* ===== Início redesenhado ===== */
+.mch{scroll-snap-type:x proximity;scrollbar-width:none}.mch::-webkit-scrollbar{display:none}
+.mch .chip{scroll-snap-align:center}
+.hero{background:var(--gd);color:#ecfdf5;border-radius:1.5rem;padding:1.25rem 1.25rem 1.125rem;margin:.875rem 0 .75rem}
+.hero .lbl{display:flex;justify-content:space-between;align-items:center;gap:.5rem;font-size:.8125rem;font-weight:600;color:#a7f3d0}
+.hero .badge{background:rgba(255,255,255,.14);color:#fff;border-radius:6.1875rem;padding:.25rem .625rem;font-weight:700;font-size:.8125rem;white-space:nowrap}
+.hero .badge.neg{background:#fecaca;color:#7f1d1d}
+.hero .big{display:block;font-size:2.375rem;font-weight:800;letter-spacing:-.035em;line-height:1.1;margin:.5rem 0 1.125rem;color:#fff;overflow-wrap:anywhere}
+.hero .big.neg{color:#fecaca}
+.split{display:flex;height:.625rem;border-radius:6.1875rem;overflow:hidden;background:rgba(255,255,255,.14);gap:2px}
+.split i{display:block;height:100%}.split .a{background:#34d399}.split .b{background:#fb923c}
+.flow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.875rem}
+.flow div{min-width:0}.flow span{display:flex;align-items:center;gap:.375rem;font-size:.8125rem;color:#a7f3d0}
+.flow span:before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:#34d399}
+.flow .d span:before{background:#fb923c}
+.flow b{display:block;font-size:1.0625rem;font-weight:700;color:#fff;margin-top:2px;overflow-wrap:anywhere}
+.empty{display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:var(--card);border:1.5px dashed var(--line);border-radius:1.125rem;padding:.875rem 1rem;margin-bottom:.75rem}
+.empty p{font-size:.875rem;color:var(--mute);line-height:1.4}
+.empty .btn{width:auto;height:2.5rem;font-size:.9375rem;padding:0 1rem;flex:none}
+.sec{background:var(--card);border:1.5px solid var(--line);border-radius:1.5rem;padding:1.125rem 1.125rem .5rem;margin-bottom:.75rem}
+.sec h3{margin:0;font-size:1.0625rem;letter-spacing:-.015em}
+.sec .sub{font-size:.8125rem;color:var(--mute);margin:2px 0 .25rem}
+.rk{display:grid;grid-template-columns:1.75rem 1fr auto;gap:0 .625rem;align-items:center;padding:.75rem 0;border-top:1px solid var(--line)}
+.sec h3+.rk,.sec .sub+.rk{margin-top:.625rem}
+.rk .n{width:1.75rem;height:1.75rem;border-radius:50%;background:var(--gl);color:var(--gd);display:grid;place-items:center;font-weight:800;font-size:.8125rem}
+.rk .n.w{background:#fee2e2;color:#991b1b}
+.rk .nm{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .vl{text-align:right;font-weight:700}
+.rk .m{grid-column:2/4;display:flex;align-items:center;gap:.625rem;margin-top:.5rem}
+.rk .m u{flex:1;height:.375rem;border-radius:6.1875rem;background:var(--line);text-decoration:none;overflow:hidden}
+.rk .m u i{display:block;height:100%;border-radius:6.1875rem;background:var(--g)}
+.rk .m.w u i{background:var(--red)}
+.rk .m small{font-size:.75rem;color:var(--mute);min-width:3.25rem;text-align:right}
+.alert{display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:var(--warn);color:var(--warnt);border-radius:1.125rem;padding:.75rem 1rem;font-size:.875rem;font-weight:600;margin-bottom:.75rem}
+.alert .lnk{padding:0;color:var(--warnt);text-decoration:underline;white-space:nowrap}
+@media(min-width:760px){.hero{padding:1.5rem}.hero .big{font-size:3rem}}
+
+.meta{background:var(--card);border:1.5px solid var(--line);border-radius:1.5rem;padding:1rem 1.125rem;margin-bottom:.75rem}
+.mbar{height:.625rem;border-radius:6.1875rem;background:var(--line);overflow:hidden;margin:.625rem 0 .5rem}
+.mbar i{display:block;height:100%;border-radius:6.1875rem;background:var(--g)}
+.meta p{font-size:.8125rem;color:var(--mute)}
+button.empty{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+</style>
+
+<style id="preco-certo-dark-mode-v1">
+:root{color-scheme:light}
+html[data-theme="dark"]{
+ color-scheme:dark;
+ --bg:#111318;--card:#1c2028;--ink:#f3f4f6;--mute:#a8b0bf;
+ --line:#343a46;--gl:#153e32;--gd:#a7f3d0;--dark:#090b10;
+ --warn:#493719;--warnt:#fcd34d;--red:#f87171
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .bar{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+ background:var(--card);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] details,
+html[data-theme="dark"] .btn.sec{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .hd,
+html[data-theme="dark"] .bar{border-color:var(--line)}
+html[data-theme="dark"] svg text{fill:var(--ink)}
+#pc-theme-toggle{
+ position:fixed;right:14px;top:12px;z-index:9999;
+ width:42px;height:42px;border:1px solid var(--line);
+ border-radius:50%;background:var(--card);color:var(--ink);
+ font-size:20px;box-shadow:0 2px 10px #0002;cursor:pointer
+}
+#app .card{transition:background .18s,border-color .18s}
+@media(prefers-reduced-motion:reduce){#app .card{transition:none}}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<div id="ck"></div>
+<script>
+const CATS={"Açaíteria":["cone",[]],"Hamburgueria":["burger",[]],"Pizzaria":["pizza",[]],"Restaurante e marmitaria":["fork",[]],"Bar pequeno":["beer",[]],"Bar grande":["wine",[]],"Lanchonete":["cup",[]],"Padaria":["basket",[]]};
+const CH=[["ifood","iFood"],["n99","99"],["keeta","Keeta"],["own","Delivery próprio"]];
+const P={tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r=".6"/>',
+calc:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/>',
+trend:'<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+bike:'<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+right:'<path d="m9 18 6-6-6-6"/>',left:'<path d="m15 18-6-6 6-6"/>',check:'<path d="M20 6 9 17l-5-5"/>',arrow:'<path d="M5 12h14m-7-7 7 7-7 7"/>',plus:'<path d="M5 12h14M12 5v14"/>',
+trash:'<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>',
+user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+spark:'<path d="M9.9 4.2 11 8.5l4.3 1.1-4.3 1.1-1.1 4.3-1.1-4.3-4.3-1.1 4.3-1.1zM18 3v4M20 5h-4M18 15v4M20 17h-4"/>',
+swap:'<path d="m17 3 4 4-4 4M21 7H8M7 21l-4-4 4-4M3 17h13"/>',warn:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+cone:'<path d="m7 11 4.1 10.4a1 1 0 0 0 1.8 0L17 11M17 7A5 5 0 0 0 7 7M17 7a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4"/>',
+burger:'<path d="M4 11a8 7 0 0 1 16 0zM3 15h18M4 19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1H4zM3 11h18"/>',pizza:'<path d="M2 6a17 17 0 0 1 20 0L12 22z"/><circle cx="12" cy="9" r=".6"/><circle cx="10" cy="14" r=".6"/>',
+fork:'<path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2zm0 0v7"/>',
+beer:'<path d="M17 11h1a3 3 0 0 1 0 6h-1M9 12v6M13 12v6M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8M5 8a2.5 2.5 0 0 1 0-5 3 3 0 0 1 5-1 3 3 0 0 1 5 1 2.5 2.5 0 0 1 0 5z"/>',
+wine:'<path d="M8 22h8M12 15v7M12 15a5 5 0 0 1-5-5c0-2 .5-4 2-8h6c1.5 4 2 6 2 8a5 5 0 0 1-5 5z"/>',
+cup:'<path d="M10 2v2M14 2v2M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1zM17 12h1a2.5 2.5 0 0 1 0 5h-1"/>',
+basket:'<path d="m15 11-1 9M19 11l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4M5 11l4-7M9 11l1 9"/>'};
+const ic=(n,s=24,w=2)=>`<svg style="width:${s*.75/16}rem;height:${s*.75/16}rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const R=n=>"R$ "+(isFinite(n)?n:0).toFixed(2).replace(".",",");
+const num=v=>parseFloat(String(v).replace(",","."))||0;
+const $=id=>document.getElementById(id);
+const DEFF={fv:5,ifood:26.5,ifoodP:15.2,n99:12.1,n99P:14.1,keeta:null,keetaP:null,own:0,dfee:0,card:0,tax:0,other:0,chk:"2026-10-22"};
+let S={cat:null,fees:{...DEFF},products:[]},U={view:"boot",cur:0,step:1,mode:"login",err:"",msg:"",user:null};
+const tok=()=>{try{return localStorage.getItem("pc_t")}catch{return null}};
+async function api(path,method="GET",body){
+  const h={"Content-Type":"application/json"},t=tok();if(t)h.Authorization="Bearer "+t;
+  let r;try{r=await fetch(path,{method,headers:h,body:method==="GET"?undefined:JSON.stringify(body||{})})}catch{throw new Error("Sem conexão com o servidor. Tente de novo.")}
+  let d=null;try{d=await r.json()}catch{}
+  if(!r.ok){
+    if(r.status===401&&t&&path==="/api/store"){try{localStorage.removeItem("pc_t")}catch{}if(method!=="GET")location.reload()}
+    throw new Error((d&&typeof d.detail==="string"&&d.detail)||"Algo deu errado. Tente de novo.")}
+  return d}
+let tm;const save=()=>{clearTimeout(tm);tm=setTimeout(()=>api("/api/store","PUT",S).catch(()=>{}),400)};
+
+
+const ok=p=>cost(p)>0;
+const go=(v,x)=>{U.view=v;if(x!==undefined)U.cur=x;U.step=1;U.err=U.msg="";render();scrollTo(0,0)};
+function session(d){try{localStorage.setItem("pc_t",d.token)}catch{}U.user=d.user;return enter()}
+async function enter(){const s=await api("/api/store").catch(()=>null);if(s)U.photo=s.photo||"",delete s.photo;if(s&&s.products){S=s;ensTrial();if(S.fees&&S.fees.fv===2){if(S.fees.n99<S.fees.n99P){const a=S.fees.n99;S.fees.n99=S.fees.n99P;S.fees.n99P=a}S.fees.fv=3}if(S.fees&&S.fees.fv===4){for(const k of["ifood","ifoodP","n99","n99P"])if(S.fees[k]==null)S.fees[k]=DEFF[k];if(!S.fees.chk)S.fees.chk=DEFF.chk;S.fees.fv=5}if(!S.fees||S.fees.fv!==5)S.fees={...DEFF,card:S.fees?.card||0,tax:S.fees?.tax||0,other:S.fees?.other||0,own:S.fees?.own||0,dfee:S.fees?.dfee||0,dpass:S.fees?.dpass};go("dash")}else{if(s){S.plan=s.plan;S.trial=s.trial}go("cats")}}
+async function logout(silent){if(!silent&&!await cf("Sair da conta?"))return;try{localStorage.removeItem("pc_t")}catch{}U.photo="";S={cat:null,fees:{...DEFF},products:[]};U.mode="login";go("welcome")}
+const IT={"Ingrediente":["Açaí","Creme","Fruta","Cobertura","Granola e cereais","Leite e laticínios","Carne","Queijo","Pão e massa","Molho","Legume e verdura","Bebida","Outro"],"Embalagem":["Copo","Tampa","Colher","Garfo e faca","Canudo","Sacola","Pote","Marmita","Caixa","Saquinho","Guardanapo","Lacre e etiqueta","Outra"],"Outros insumos":["Gás","Energia","Água","Mão de obra","Limpeza","Outro"],"Entrega":["Embalagem de entrega","Sacola térmica","Motoboy","Taxa de entrega","Combustível","Outro"]};
+const DEF={"Ingrediente":"g","Embalagem":"un","Outros insumos":"un","Entrega":"un"};
+const unit=it=>it.u||DEF[it.t]||"g";
+const PK=/copo|tampa|colher|sacola|saquinho|caixa|embalagem|pote|marmita|canudo|guardanapo/i;
+const seedItem=r=>{const m=r[0].match(PK),pk=!!m,k=pk?({embalagem:"Outra"}[m[0].toLowerCase()]||m[0][0].toUpperCase()+m[0].slice(1).toLowerCase()):"";return{n:r[0],t:pk?"Embalagem":"Ingrediente",k:k,u:pk||/^pão/i.test(r[0])?"un":"g",pack:r[1],yield:r[2],use:r[3]}};
+const res=it=>{const g=it.ref&&(S.ins||[]).find(x=>x.id===it.ref);return g?{...it,pack:g.pack,yield:g.yield,u:g.u}:it};
+const sum=l=>(l||[]).reduce((a,i)=>{i=res(i);return a+(num(i.yield)?num(i.pack)/num(i.yield)*num(i.use)/(1-Math.min(num(i.loss),90)/100):0)},0);
+const cost=(p,d=0)=>sum(p.items)/(num(p.rend)||1)+sum(p.deliv)+(d>4?0:(p.combo||[]).reduce((a,c)=>{const q=S.products.find(x=>x.id===c.id);return a+(q&&q!==p?cost(q,d+1)*num(c.q):0)},0));
+const CK=["Motoboy","Taxa de entrega","Combustível"];
+const feeBox=c=>{const f=num(S.fees.dfee);if(!(f>0))return`<p class="mute sm" style="margin-top:8px">Informe a taxa de entrega em Taxas e canais para ver quanto o cliente paga no total.</p>`;if(!isFinite(c.price))return"";return`<div class="card" style="margin-top:12px"><div class="price"><span class="mute">${S.fees.dpass===false?"Taxa de entrega (fica com você)":"Taxa de entrega (vai para o entregador)"}</span><b>${R(f)}</b></div><div class="price" style="margin-top:6px"><b>Cliente paga no total</b><b class="v">${R(c.price+f)}</b></div></div>`};const PR=n=>isFinite(n)?R(n):"informe a taxa";
+const feeOf=(k,own)=>{const F=S.fees;if(k==="own")return F.own||0;const v=F[own?k+"P":k];return v==null?NaN:v};
+const hasOwn=p=>p.own!==false;
+function calc(p,k,own){if(own===undefined)own=hasOwn(p);const F=S.fees,e=feeOf(k,own),ins=cost(p)-sum(p.deliv),ent=Math.max(0,sum((own||k==="own")&&!(k==="own"&&num(F.dfee)>0&&F.dpass!==false)?p.deliv:(p.deliv||[]).filter(i=>!CK.includes(i.k)))-(k==="own"&&F.dpass===false?num(F.dfee):0)),base=ins+ent,m=p.margin/100,fp=(e+(F.card||0)+(F.tax||0)+(F.other||0))/100,cm=p.mode==="cost",den=cm?1-fp:1-m-fp,price=den>.05&&base>0?(cm?base*(1+m):base)/den:NaN,f=v=>price*(v||0)/100;return{ins,ent,price,card:f(F.card),app:f(e),tax:f(F.tax),oth:f(F.other),lucro:price-base-price*fp,real:(price-base-price*fp)/price*100}}
+const priceFor=(p,k,o)=>calc(p,k,o).price;
+const setOwn=v=>{S.products[U.cur].own=v;save();render()};
+const feeIn=(k,n)=>`<label>${n} (%)</label><input type="number" inputmode="decimal" value="${S.fees[k]??""}" placeholder="informe" oninput="setF('${k}',this.value)">`;
+const UN={g:"Gramas",kg:"Quilos",ml:"Mililitros",l:"Litros",un:"Unidade"},US={g:"g",kg:"kg",ml:"ml",l:"L",un:"un"};
+const nf=(l,i,k,v,pre,suf)=>`<div class="in ${pre?"pre":""}"><input type="number" inputmode="decimal" step="any" value="${v}" oninput="upd('${l}',${i},'${k}',this.value)"${k==="pack"?` onfocus="this.dataset.o=this.value" onchange="bulk('${l}',${i},this)"`:""}>${pre?"<i>R$</i>":"<i>"+suf+"</i>"}</div>`;
+const itemCard=(l,it0,i)=>{const it=res(it0),u=unit(it),h=`<div class="card"><button class="dup" onclick="dupI('${l}',${i})" aria-label="Duplicar item">${ic("copy",26)}</button><button class="del" onclick="delI('${l}',${i})" aria-label="Remover item">${ic("trash",26)}</button><button class="kind" onclick="pickK('${l}',${i})">${esc(it.k?it.t+" · "+it.k:it.t||"Ingrediente")} ${ic("swap",18)}</button><div class="row" style="align-items:end"><div style="flex:5"><label>Item</label><input type="text" value="${esc(it.n)}" oninput="upd('${l}',${i},'n',this.value)"></div><div style="flex:4"><label>Medida</label><select onchange="upd('${l}',${i},'u',this.value);render()">${Object.keys(UN).map(x=>`<option value="${x}" ${u===x?"selected":""}>${UN[x]}</option>`).join("")}</select></div></div><div class="row"><div><label>Qtde.</label>${nf(l,i,"yield",it.yield,0,US[u])}</div><div><label>Valor pago</label>${nf(l,i,"pack",it.pack||"",1)}</div><div><label>Q. usado</label>${nf(l,i,"use",it.use,0,US[u])}</div></div>${(S.ins||[]).length?`<label>Preço do estoque</label><select onchange="upd('${l}',${i},'ref',this.value);render()"><option value="">Preço digitado aqui</option>${S.ins.map(g=>`<option value="${g.id}" ${it0.ref===g.id?"selected":""}>${esc(g.n||"sem nome")}</option>`).join("")}</select>`:""}<div class="row"><div><label>Perda / quebra</label>${nf(l,i,"loss",it.loss||"",0,"%")}</div></div><div class="price" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><span class="mute">Valor usado</span><b class="v" style="font-size:1.125rem" id="vu-${l}-${i}">${R(sum([it]))}</b></div></div>`;return it0.ref?h.replace(/oninput="upd\('[a-z]+',\d+,'(yield|pack)'/g,m=>"disabled "+m):h};
+function pickK(l,i){const it=S.products[U.cur][l][i],G=l==="deliv"?["Entrega"]:["Ingrediente","Embalagem","Outros insumos"],d=document.createElement("div");d.id="pk";d.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:99";d.onclick=e=>{if(e.target===d)d.remove()};d.innerHTML='<div style="background:var(--bg);border-radius:22px 22px 0 0;width:100%;max-width:520px;max-height:75vh;overflow:auto;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))"><h3 style="margin:0 0 2px">Tipo do item</h3><p class="mute sm">Escolha o que é: copo, tampa, colher, açaí...</p>'+G.map(g=>`<p class="kick" style="margin:16px 0 8px">${g}</p><div class="chips" style="margin:0">${IT[g].map(k=>`<button class="chip ${it.t===g&&it.k===k?"on":""}" onclick="setK('${l}',${i},'${g}','${k}')">${k}</button>`).join("")}</div>`).join("")+'</div>';document.body.appendChild(d)}
+function setK(l,i,g,k){const it=S.products[U.cur][l][i];if(!it.n||it.n===it.k)it.n=k;it.t=g;it.k=k;it.u=DEF[g];const e=$("pk");if(e)e.remove();save();render()}
+const setBase=v=>{S.products[U.cur].mode=v;save();render()};
+Object.assign(P,{copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',wallet:'<path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4M4 6v12c0 1.1.9 2 2 2h14v-4M18 12a2 2 0 0 0 0 4h4v-4z"/>',users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',chart:'<path d="M3 3v18h18M8 17v-5M13 17V7M18 17v-8"/>'});
+const MES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],MESF=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const DE=["Aluguel","Água","Luz","Internet","Gás","Fornecedor 01","Fornecedor 02","Fornecedor 03"],PE=["Prestação da casa","Parcela do carro","Empréstimo pessoal","Água","Luz","Parcela do celular","Lazer","Combustível","Faculdade"];
+U.mes=new Date().getMonth();let V={};
+const F=()=>{if(!S.fin)S.fin={ano:new Date().getFullYear(),exp:{},fat:{},staff:["01","02","03"].map(n=>({n:"Funcionário "+n,sal:0})),pay:{},pExp:PE.map(n=>({d:"",n,v:0})),pInc:["Pessoa 1","Pessoa 2","Pessoa 3","Receita 04","Receita 05","Receita 06"].map(n=>({n,v:0}))};return S.fin};
+const expList=m=>{const f=F();return f.exp[m]||(f.exp[m]=DE.map(n=>({d:"",n,v:0})))};
+const sm=a=>a.reduce((t,x)=>t+num(x.v),0);
+const monthRec=m=>Object.values(F().fat[m]||{}).reduce((a,r)=>a+num(r.din)+num(r.car)+num(r.pix)+num(r.out),0);
+const staffTot=m=>F().staff.reduce((a,s,i)=>{const p=(F().pay[m]||{})[i]||{};return a+num(p.p)+num(p.f)},0);
+const monthDes=m=>sm(expList(m));
+const pct=n=>(isFinite(n)?n:0).toFixed(2).replace(".",",")+"%";
+function VALS(){const f=F(),m=U.mes,o={},fat=f.fat[m]||{},col={din:0,car:0,pix:0,out:0};let tt=0;
+for(let d=1;d<=31;d++){const r=fat[d]||{};let t=0;for(const k in col){const x=num(r[k]);col[k]+=x;t+=x}tt+=t;o["d"+d]=R(t)}
+o.tdin=R(col.din);o.tcar=R(col.car);o.tpix=R(col.pix);o.tout=R(col.out);o.ttot=R(tt);
+const md=monthDes(m);o.rec=R(tt);o.des=R(md);o.bal=R(tt-md);o.st=R(staffTot(m));
+f.staff.forEach((s,i)=>{const p=(f.pay[m]||{})[i]||{};o["sv"+i]=R(num(p.p)+num(p.f))});
+let TR=0,TD=0;for(let i=0;i<12;i++){TR+=monthRec(i);TD+=monthDes(i)}
+o.tr=R(TR);o.td=R(TD);o.fl=R(TR-TD);o.med=R(TR/12);o.mg=pct(TR?(TR-TD)/TR*100:0);
+const pr=sm(f.pInc),pd=sm(f.pExp);o.pr=R(pr);o.pd=R(pd);o.ps=R(pr-pd);return o}
+const refresh=()=>{const v=VALS();document.querySelectorAll("[data-k]").forEach(e=>{if(v[e.dataset.k]!==undefined)e.textContent=v[e.dataset.k]})};
+function fset(p,v,n){const a=p.split(".");let o=F();for(let i=0;i<a.length-1;i++)o=o[a[i]]||(o[a[i]]={});o[a[a.length-1]]=n?num(v):v;save();refresh()}
+function addRow(p,o){let t=F();p.split(".").forEach(k=>t=t[k]);t.push(o);save();render()}
+function delRow(p,i){let t=F();p.split(".").forEach(k=>t=t[k]);t.splice(i,1);save();render()}
+async function delStaff(i){if(!await cf("Remover funcionário?"))return;const f=F();f.staff.splice(i,1);for(const m in f.pay){const o={};Object.keys(f.pay[m]).forEach(k=>{k=+k;if(k<i)o[k]=f.pay[m][k];else if(k>i)o[k-1]=f.pay[m][k]});f.pay[m]=o}save();render()}
+const inp=(p,v,n,ph)=>`<input class="mini" type="${n?"number":"text"}" ${n?'inputmode="decimal" step="any"':""} value="${esc(v||"")}" placeholder="${ph||""}" oninput="fset('${p}',this.value,${n?1:0})">`;
+const inpb=(p,v)=>`<div class="in pre"><input type="number" inputmode="decimal" step="any" value="${v||""}" oninput="fset('${p}',this.value,1)"><i>R$</i></div>`;
+const stat=(l,k,c)=>`<div class="card" style="margin:0;padding:12px;min-width:0"><span class="mute sm" style="display:block;white-space:nowrap">${l}</span><b data-k="${k}" style="font-size:1.0625rem;color:${c||"var(--ink)"}">${V[k]}</b></div>`;
+const mch=()=>`<div class="mch">${MES.map((n,i)=>`<button class="chip ${U.mes===i?"on":""}" onclick="U.mes=${i};render()">${n}</button>`).join("")}</div>`;
+const hd=(t,s)=>`<div class="hd"><div><h2 style="margin:0">${t}</h2><p class="mute sm">${s}</p></div></div>`;
+function chart(lb,ser){const mx=Math.max(1,...ser.flatMap(s=>s.v)),n=lb.length,gw=320/n,bw=Math.min(16,gw/ser.length-2);let x='<svg viewBox="0 0 340 150" style="width:100%;height:auto"><line x1="10" x2="330" y1="120" y2="120" stroke="#e4e5e2"/>';lb.forEach((l,i)=>{ser.forEach((s,j)=>{const h=Math.max(0,s.v[i]/mx*100);x+=`<rect x="${10+i*gw+gw/2-ser.length*(bw+2)/2+j*(bw+2)}" y="${120-h}" width="${bw}" height="${h}" rx="3" fill="${Array.isArray(s.c)?s.c[i]:s.c}"/>`});x+=`<text x="${10+i*gw+gw/2}" y="136" text-anchor="middle" font-size="9" fill="#6b6f76">${l}</text>`});return x+"</svg>"}
+const MV=["more","faq","sug","about","priv","terms","equipe","pess","sales","rep","ficha","phist","plans"],NEWV=["desp","fin","rank","dash","stock",...MV],NAVV=["home","desp","fin","dash","stock",...MV];
+const nav=()=>`<nav class="nav"><div>${[["dash","Início","chart"],["home","Produtos","tag"],["stock","Estoque","basket"],["desp","Despesas","wallet"],["fin","Financeiro","trend"],["more","Mais","dots"]].map(x=>`<button class="${(x[0]==="more"?MV.includes(U.view):U.view===x[0])?"on":""}" onclick="go('${x[0]}')">${ic(x[2],22)}<span>${x[1]}${!has()&&!MV.includes(x[0])?" "+ic("lock",11):""}</span></button>`).join("")}</div></nav>`;
+const VIEWS={
+desp:()=>{const m=U.mes,L=expList(m),f=F();V=VALS();return hd("Despesas mensais",MESF[m]+" de "+f.ano)+mch()+`<div class="row" style="margin:14px 0">${stat("Receita","rec","var(--g)")}${stat("Despesas","des","var(--red)")}${stat("Balanço","bal")}</div><h3 style="margin-top:6px">Despesas</h3><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:44px 1fr 88px 20px"><span class="lb">Dia</span><span class="lb">Descrição</span><span class="lb">Valor</span><span></span>${L.map((e,i)=>inp(`exp.${m}.${i}.d`,e.d)+inp(`exp.${m}.${i}.n`,e.n)+inp(`exp.${m}.${i}.v`,e.v,1)+`<button class="del2" onclick="delRow('exp.${m}',${i})" aria-label="Remover">${ic("trash",24)}</button>`).join("")}</div><button class="btn sec" style="margin-top:10px" onclick="addRow('exp.${m}',{d:'',n:'',v:0})">Adicionar despesa</button></div><h3>Faturamento bruto</h3><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:22px repeat(4,minmax(0,1fr)) 70px"><span class="lb">Dia</span><span class="lb">Dinheiro</span><span class="lb">Cartão</span><span class="lb">Pix</span><span class="lb">Outro</span><span class="lb">Total</span>${Array.from({length:31},(_,i)=>{const d=i+1;return`<span class="lb">${d}</span>`+["din","car","pix","out"].map(k=>inp(`fat.${m}.${d}.${k}`,((f.fat[m]||{})[d]||{})[k],1)).join("")+`<b class="tt" data-k="d${d}">${V["d"+d]}</b>`}).join("")}<b class="tt">Total</b>${["tdin","tcar","tpix","tout"].map(k=>`<b class="tt" data-k="${k}">${V[k]}</b>`).join("")}<b class="tt" data-k="ttot">${V.ttot}</b></div></div>`},
+equipe:()=>{const m=U.mes,f=F();V=VALS();return hd("Controle de funcionários",MESF[m]+" de "+f.ano)+mch()+`<div style="margin:14px 0">${stat("Total do mês","st","var(--red)")}</div>`+f.staff.map((s,i)=>{const p=(f.pay[m]||{})[i]||{};return`<div class="card"><button class="del" onclick="delStaff(${i})" aria-label="Remover">${ic("trash",26)}</button><label style="margin-top:0">Funcionário</label><input type="text" style="width:calc(100% - 2.5rem)" value="${esc(s.n)}" oninput="fset('staff.${i}.n',this.value,0)"><div class="row"><div><label>Salário</label>${inpb(`staff.${i}.sal`,s.sal)}</div><div><label>Valor pago</label>${inpb(`pay.${m}.${i}.p`,p.p)}</div><div><label>13º/Férias</label>${inpb(`pay.${m}.${i}.f`,p.f)}</div></div><div class="price" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><span class="mute">Valor</span><b class="v" style="font-size:1.125rem" data-k="sv${i}">${V["sv"+i]}</b></div></div>`}).join("")+`<button class="btn sec" onclick="addRow('staff',{n:'Funcionário '+String(F().staff.length+1).padStart(2,'0'),sal:0})">Adicionar funcionário</button>`},
+fin:()=>{const f=F();V=VALS();const RR=[],DD=[];for(let i=0;i<12;i++){RR.push(monthRec(i));DD.push(monthDes(i))}return hd("Controle financeiro",String(f.ano))+`<div class="g2" style="margin:14px 0 12px">${stat("Total receita","tr","var(--g)")}${stat("Total despesa","td","var(--red)")}${stat("Faturamento líquido","fl")}${stat("Média de faturamento","med")}${stat("Margem geral","mg")}</div><div class="card"><b>Receita e despesas</b><div class="sm mute" style="margin:4px 0 8px"><span style="color:#059669">■</span> Receita &nbsp; <span style="color:#dc2626">■</span> Despesas</div>${chart(MES,[{c:"#059669",v:RR},{c:"#dc2626",v:DD}])}</div><div class="g2">${MESF.map((n,i)=>{const r=RR[i],d=DD[i];return`<div class="card" style="margin:0;padding:12px"><b>${n}</b>`+[["Receita",R(r)],["Despesas",R(d)],["Balanço",R(r-d)],["Margem",pct(r?(r-d)/r*100:0)]].map(x=>`<div class="price sm" style="margin-top:4px"><span class="mute">${x[0]}</span><b>${x[1]}</b></div>`).join("")+`</div>`}).join("")}</div>`},
+pess:()=>{const f=F();V=VALS();return hd("Controle pessoal","Receitas, despesas e saldo")+`<div class="row" style="margin:14px 0">${stat("Receitas","pr","var(--g)")}${stat("Despesas","pd","var(--red)")}${stat("Saldo","ps")}</div><h3 style="margin-top:6px">Receitas</h3><p class="mute sm" style="margin:-4px 0 8px">Todo dinheiro que entra para você: salário, retirada do negócio, renda extra.</p><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:1fr 110px">${f.pInc.map((e,i)=>inp(`pInc.${i}.n`,e.n)+inp(`pInc.${i}.v`,e.v,1)).join("")}</div></div><h3>Despesas</h3><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:52px 1fr 88px 20px"><span class="lb">Data</span><span class="lb">Descrição</span><span class="lb">Valor</span><span></span>${f.pExp.map((e,i)=>inp(`pExp.${i}.d`,e.d,0,"dia")+inp(`pExp.${i}.n`,e.n)+inp(`pExp.${i}.v`,e.v,1)+`<button class="del2" onclick="delRow('pExp',${i})" aria-label="Remover">${ic("trash",24)}</button>`).join("")}</div><button class="btn sec" style="margin-top:10px" onclick="addRow('pExp',{d:'',n:'',v:0})">Adicionar despesa</button></div><div class="card"><b>Receitas e despesas</b>${chart(["Receitas","Despesas"],[{c:["#059669","#dc2626"],v:[sm(f.pInc),sm(f.pExp)]}])}</div>`}};
+function render(){if(!has()&&!OPENV.includes(U.view)){U.why="Seu teste grátis de 7 dias terminou.";U.view="plans"}const v=U.view,a=$("app");if(NEWV.includes(v))a.innerHTML=VIEWS[v]();else render0();const nv=NAVV.includes(v);a.classList.toggle("hasnav",nv);if(nv)a.insertAdjacentHTML("beforeend",nav())}
+function pick(c){S.cat=c;S.trial=S.trial||Date.now();S.products=CATS[c][1].slice(0,lim()).map((x,i)=>({id:Date.now()+i,name:x[0],margin:50,mode:"price",deliv:[],items:x[1].map(seedItem)}));save();go("home")}
+async function pickCustom(){const r=await mdl("Criar meu negócio",`<label>Nome do negócio</label><input type="text" placeholder="ex.: Minha Lanchonete" maxlength="40">`,"Criar");if(!r)return;const t=(r[0]||"").trim();if(!t)return;S.cat=t;S.trial=S.trial||Date.now();S.products=[];save();go("home")}
+const newP=()=>{S.products.push({id:Date.now(),name:"Novo produto",margin:50,mode:"price",deliv:[],items:[{n:"",t:"Ingrediente",pack:0,yield:1,use:1}]});save();go("edit",S.products.length-1)};
+async function delP(){if(await cf("Excluir este produto?")){S.products.splice(U.cur,1);save();go("home")}}
+const addI=l=>{S.products[U.cur][l].push({n:"",t:l==="deliv"?"Entrega":"Ingrediente",pack:0,yield:1,use:1});save();render()};
+const dupI=(l,i)=>{const a=S.products[U.cur][l];a.splice(i+1,0,JSON.parse(JSON.stringify(a[i])));save();render()};
+const delI=(l,i)=>{S.products[U.cur][l].splice(i,1);save();render()};
+
+function upd(l,i,k,v){const p=S.products[U.cur];if(!l)p[k]=v;else p[l][i][k]=v;save();const t=$("tot");if(t)t.textContent=R(cost(p));if(l){const e=$("vu-"+l+"-"+i);if(e)e.textContent=R(sum([p[l][i]]))}}
+const setM=v=>{S.products[U.cur].margin=+v;save();render()};
+const setF=(k,v)=>{S.fees[k]=String(v).trim()===""?null:num(v);save()};
+const setDp=v=>{S.fees.dpass=v;save();render()};
+async function doSubmit(e){e.preventDefault();const f=new FormData(e.target),m=U.mode;U.err=U.msg="";
+ try{if(m==="login")return session(await api("/api/login","POST",Object.fromEntries(f)));
+  if(m==="signup")return session(await api("/api/signup","POST",Object.fromEntries(f)));
+  if(m==="forgot"){await api("/api/forgot","POST",Object.fromEntries(f));U.msg="Se o e-mail estiver cadastrado, enviamos um link para criar uma nova senha."}
+  if(m==="reset"){return session(await api("/api/reset","POST",{token:new URLSearchParams(location.search).get("reset"),password:f.get("password")}).then(d=>{return d}))}
+ }catch(x){U.err=x.message}render()}
+const setMode=m=>{U.mode=m;U.err=U.msg="";render()};
+function authView(){const m=U.mode,T={login:"Entrar na sua conta",signup:"Criar conta",forgot:"Esqueci minha senha",reset:"Criar nova senha"}[m];
+ return`<button class="back" onclick="go('welcome')">${ic("left")} Voltar</button><h2>${T}</h2><p class="mute">${m==="forgot"?"Informe seu e-mail e enviaremos um link.":m==="reset"?"Escolha uma senha nova.":"Salve seus produtos e acesse de qualquer aparelho."}</p>
+ 
+ <form onsubmit="doSubmit(event)" ${m==="forgot"||m==="reset"?'style="margin-top:0.75rem"':""}>${m==="signup"?`<label>Nome</label><input type="text" name="name" autocomplete="name" required>`:""}
+ ${m!=="reset"?`<label>E-mail</label><input type="email" name="email" autocomplete="email" required>`:""}
+ ${m!=="forgot"?`<label>${m==="reset"?"Nova senha":"Senha"}</label><input type="password" name="password" minlength="${m==="login"?1:8}" autocomplete="${m==="login"?"current-password":"new-password"}" required>`:""}
+ ${U.err?`<div class="err">${esc(U.err)}</div>`:""}${U.msg?`<div class="okm">${esc(U.msg)}</div>`:""}
+ <button class="btn" style="margin-top:1.25rem">${{login:"Entrar",signup:"Criar conta",forgot:"Enviar link",reset:"Salvar senha"}[m]}</button></form>
+ <div style="margin-top:0.75rem;display:flex;justify-content:space-between">${m==="login"?`<button class="lnk" onclick="setMode('forgot')">Esqueci minha senha</button><button class="lnk" onclick="setMode('signup')">Criar conta</button>`:m==="signup"?`<button class="lnk" onclick="setMode('login')">Já tenho conta</button>`:`<button class="lnk" onclick="setMode('login')">Voltar para o login</button>`}</div>`}
+
+function render0(){const a=$("app"),v=U.view;a.className=v==="welcome"?"full":"";
+ if(v==="boot")a.innerHTML="";
+ else if(v==="welcome")a.innerHTML=`<div class="photo"><svg class="art" viewBox="0 0 414 233" role="img" aria-label="Custo, taxas e ganho somados no preço de venda" font-family="Plus Jakarta Sans,system-ui,sans-serif"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b6b4f"/><stop offset="1" stop-color="#1a1b1d"/></linearGradient></defs><rect width="414" height="233" fill="url(#hg)"/><circle cx="350" cy="60" r="110" fill="#34d399" opacity=".1"/><circle cx="60" cy="230" r="90" fill="#34d399" opacity=".08"/><rect x="25" y="16" width="32" height="32" rx="8" fill="#059669"/><g transform="translate(33 24) scale(.667)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r=".6"/></g><text x="69" y="38" fill="#fff" font-size="20" font-weight="700" letter-spacing="-.4">Preço Certo</text><g font-size="11" fill="#fff"><rect x="25" y="72" width="140" height="36" rx="10" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".2"/><text x="37" y="94" fill-opacity=".7">Custo</text><text x="153" y="94" text-anchor="end" font-weight="700" font-size="12">R$ 4,26</text><rect x="25" y="114" width="140" height="36" rx="10" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".2"/><text x="37" y="136" fill-opacity=".7">Taxas</text><text x="153" y="136" text-anchor="end" font-weight="700" font-size="12">27%</text><rect x="25" y="156" width="140" height="36" rx="10" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".2"/><text x="37" y="178" fill-opacity=".7">Ganho</text><text x="153" y="178" text-anchor="end" font-weight="700" font-size="12">50%</text></g><path d="M174 132h34m-7-7 7 7-7 7" stroke="#34d399" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g transform="rotate(-6 300 132)"><rect x="218" y="87" width="164" height="90" rx="18" fill="#fff"/><circle cx="238" cy="105" r="5" fill="#1a1b1d" fill-opacity=".15"/><text x="236" y="130" font-size="10.5" fill="#6b6f76" font-weight="600" letter-spacing=".5">VENDER A</text><text x="236" y="160" font-size="30" font-weight="800" fill="#17181a" letter-spacing="-1">R$ 14,80</text></g></svg><h1>Cobre o preço certo no delivery.</h1><p>Calcule o custo de cada produto e descubra quanto cobrar em cada aplicativo, sem perder dinheiro com taxas.</p></div>
+ <div class="wel"><div class="feat"><span>${ic("calc",22)}</span>Custo exato de cada produto, item por item</div><div class="feat"><span>${ic("trend",22)}</span>Escolha quanto quer ganhar em cada venda</div><div class="feat"><span>${ic("bike",22)}</span>Preço certo para iFood, 99, Keeta e delivery próprio</div>
+ <button class="btn" onclick="U.mode='signup';go('auth')">${ic("arrow",24)} Começar agora</button><button class="lnk" style="width:100%;color:#34d399;margin-top:0.5rem" onclick="U.mode='login';go('auth')">Já tenho conta</button><p class="note">Grátis para testar. Plano completo por R$ 19,90/mês.</p></div>`;
+ else if(v==="auth"){a.innerHTML=authView()}
+ else if(v==="cats")a.innerHTML=`<button class="back" onclick="go('${S.cat?"home":"cats"}')" ${S.cat?"":'style="visibility:hidden"'}>${ic("left")} Voltar</button><h2>Qual é o seu negócio?</h2><p class="mute" style="font-size:.9375rem;margin-bottom:1.125rem">Escolha o tipo do seu negócio ou crie o seu do zero.</p><div class="grid">${Object.keys(CATS).map(c=>`<button class="card" onclick="pick(this.dataset.c)" data-c="${c}"><div class="ic">${ic(CATS[c][0],24)}</div>${c}</button>`).join("")}<button class="card" onclick="pickCustom()"><div class="ic">${ic("plus",24)}</div>Criar meu negócio</button></div>`;
+ else if(v==="home")a.innerHTML=`<div class="hd"><div><h2 style="margin:0">Minha Loja</h2><p class="mute" style="font-size:.875rem">${esc(S.cat)} · ${S.products.length} produtos</p></div><button class="avatar" onclick="logout()" aria-label="Sair da conta">${U.photo?`<img src="${U.photo}" alt="">`:ic("user",26)}</button></div>
+ <div class="row" style="margin-bottom:1.125rem"><button class="btn sec" onclick="go('prices')">Ver todos os preços</button><button class="btn sec" onclick="go('fees')">Taxas e canais</button></div>
+ <div class="row" style="margin:-.5rem 0 1.125rem"><button class="btn sec" onclick="go('rank')">Lucro por produto</button></div><input id="q" type="text" placeholder="Buscar produto" value="${esc(U.q||"")}" oninput="U.q=this.value;render();const e=$('q');e.focus();e.setSelectionRange(e.value.length,e.value.length)">${cats().length?`<div class="chips"><button class="chip ${!U.cf?"on":""}" onclick="U.cf='';render()">Todas</button>${cats().map(c=>`<button class="chip ${U.cf===c?"on":""}" data-c="${esc(c)}" onclick="U.cf=this.dataset.c;render()">${esc(c)}</button>`).join("")}</div>`:""}<div class="row mute" style="font-size:.875rem;margin:.75rem 0;align-items:center"><span>Categoria: ${esc(S.cat)}</span><button class="lnk" style="text-align:right;font-size:.9375rem;font-weight:700" onclick="go('cats')">Trocar</button></div>
+ <button class="pill" onclick="go('plans')">${ic("spark",32,1.8)}<span><b>${isPro()?"Plano Completo ativo":has()?"Teste grátis: "+daysLeft()+(daysLeft()===1?" dia restante":" dias restantes"):"Teste grátis encerrado"}</b><small>${isPro()?"Todas as funções liberadas":"Assine por R$ 19,90/mês"}</small></span><span class="go">${ic("right",26)}</span></button>
+ <div class="pgrid">${S.products.map((p,i)=>!hit(p)?"":`<button class="card" onclick="go('edit',${i})"><span style="position:absolute;right:1.125rem;top:50%;margin-top:-0.75rem;color:var(--mute)">${ic("right")}</span><b style="font-size:1.1875rem;letter-spacing:-.02em">${esc(p.name)}</b><p class="mute" style="font-size:.8125rem;margin:.25rem 0 .625rem">${p.items.length} itens · ganho de ${p.margin}%</p>${ok(p)?`<span class="mute" style="font-size:1.1875rem">Custo </span><span class="cost">${R(cost(p))}</span> <span class="sell">· vender a ${PR(priceFor(p,"ifood"))} no iFood</span>`:`<span class="tag">${ic("warn",20)} Falta colocar os preços (${p.items.filter(i=>!num(i.pack)).length||p.items.length})</span>`}</button>`).join("")}</div>
+ <div class="bar up"><div><button class="btn" onclick="newP()">${ic("plus",22)} Novo produto</button></div></div>`;
+ else if(v==="fees")a.innerHTML=`<button class="back" onclick="go('home')">${ic("left")} Voltar</button><h2>Taxas e canais</h2><p class="mute">Comissão + taxa de pagamento online de cada app, sobre o valor da venda. Já vêm com valores de referência (out/2026), mas o seu contrato pode ser diferente: confira e altere o que precisar. Na 99 com entregador do app ainda existe uma taxa por km, que não está incluída. A Keeta não publica a taxa: informe a sua.</p>${chkTag()}<label>Última conferência das taxas</label><input type="date" style="width:100%;height:3rem;font:500 1.0625rem inherit;padding:0 .9rem;border-radius:.875rem;border:1.5px solid var(--line)" value="${S.fees.chk||""}" onchange="S.fees.chk=this.value;save();render()">${CH.map(([k,n])=>k==="own"?feeIn(k,"Taxa "+n):feeIn(k,n+" · entregador do app")+feeIn(k+"P",n+" · entregador próprio")).join("")}<h3>Entrega própria</h3><p class="mute sm">Quanto você cobra do cliente pela entrega. Opcional: deixe em branco se não cobra.</p><label>Taxa de entrega cobrada do cliente (R$)</label><input type="number" inputmode="decimal" value="${S.fees.dfee??""}" placeholder="ex.: 4" oninput="setF('dfee',this.value)"><label>Esse valor vai direto para o entregador?</label><div class="chips" style="margin:0 0 4px"><button class="chip ${S.fees.dpass!==false?"on":""}" onclick="setDp(true)">Sim</button><button class="chip ${S.fees.dpass===false?"on":""}" onclick="setDp(false)">Não</button></div><p class="mute sm">${S.fees.dpass===false?"Não: a taxa fica com você e abate o custo de entrega no preço do produto.":"Sim: a taxa não é seu faturamento e o custo de motoboy deixa de entrar no preço do produto."}</p><h3>Taxas gerais</h3><p class="mute sm">Somam em todos os canais.</p>${[["card","Taxa do cartão"],["tax","Impostos"],["other","Outros"]].map(r=>feeIn(r[0],r[1])).join("")}<div class="bar"><div><button class="btn" onclick="go('home')">Salvar</button></div></div>`;
+ else if(v==="prices")a.innerHTML=`<button class="back" onclick="go('home')">${ic("left")} Voltar</button><h2>Todos os preços</h2><p class="mute" style="margin-bottom:1.125rem">Quanto cobrar em cada canal para ganhar o que você escolheu.</p>${chkTag()}${S.products.filter(ok).map(p=>`<div class="card"><b style="font-size:1.0625rem">${esc(p.name)}</b><p class="mute sm">custo ${R(cost(p))} · ganho ${p.margin}%</p>${CH.map(([k,n])=>k==="own"?`<div class="price" style="margin-top:0.75rem"><span>${n}</span><b class="v">${R(priceFor(p,k))}</b></div>${num(S.fees.dfee)>0?`<div class="price sm" style="margin-top:4px"><span class="mute">+ entrega (${S.fees.dpass===false?"fica com você":"vai para o entregador"})</span><b>${R(num(S.fees.dfee))}</b></div><div class="price sm" style="margin-top:4px"><span class="mute">Cliente paga</span><b>${R(priceFor(p,k)+num(S.fees.dfee))}</b></div>`:""}`:`<div style="margin-top:0.75rem"><b>${n}</b><div class="price sm" style="margin-top:4px"><span class="mute">Entregador do app</span><b class="v" style="font-size:1.0625rem">${PR(priceFor(p,k,false))}</b></div><div class="price sm" style="margin-top:4px"><span class="mute">Entregador próprio</span><b class="v" style="font-size:1.0625rem">${PR(priceFor(p,k,true))}</b></div></div>`).join("")}</div>`).join("")||'<p class="mute">Preencha os preços de um produto para vê-los aqui.</p>'}`;
+ else if(v==="edit"){const p=S.products[U.cur],st=U.step;p.deliv=p.deliv||[];p.mode=p.mode||"price";let body="",btn="";
+  if(st===1){body=`<p class="kick">Passo 1 de 3 · o que vai no produto</p><label style="margin-top:0">Nome do produto</label><input type="text" value="${esc(p.name)}" oninput="upd('',0,'name',this.value)"><div class="row"><div><label>Rendimento (porções)</label>${nf("",0,"rend",p.rend||1,0,"un")}</div><div><label>Categoria</label><input type="text" list="cl" value="${esc(p.cat||"")}" oninput="upd('',0,'cat',this.value)"><datalist id="cl">${cats().map(c=>`<option value="${esc(c)}">`).join("")}</datalist></div></div><p class="mute sm" style="margin-top:8px">Os itens abaixo são da receita inteira. O custo é dividido pelo rendimento.</p>
+  <div class="total"><div><span>Custo do produto</span><b id="tot">${R(cost(p))}</b></div>${cost(p)>0?`<div class="okc">${ic("check",18,2.6)}</div>`:""}</div><h3>O que vai no produto</h3>${p.items.map((it,i)=>itemCard("items",it,i)).join("")}<button class="btn sec" onclick="addI('items')">Adicionar item</button>
+  ${comboUI(p)}<h3>Entrega</h3><p class="mute sm" style="margin:-4px 0 10px">Sacola, caixa, motoboy e outros custos para enviar o pedido.</p>${p.deliv.map((it,i)=>itemCard("deliv",it,i)).join("")}<button class="btn sec" onclick="addI('deliv')">Adicionar custo de entrega</button><button class="btn sec" style="margin-top:12px;color:var(--red)" onclick="delP()">Excluir produto</button>`;btn=`<button class="btn" onclick="U.step=2;render();scrollTo(0,0)">${ic("arrow",24)} Próximo: quanto quer ganhar</button>`}
+  if(st===2){body=`<p class="kick">Passo 2 de 3 · quanto quer ganhar</p><h3 style="margin-top:10px">Ganho em cada venda</h3><div class="big" id="mv">${p.margin}%</div><p class="mute">${p.mode==="cost"?"em cima do custo: preço = custo + "+p.margin+"%.":"do preço de venda fica com você, depois de custo e taxas."}</p><input type="range" min="0" max="100" step="1" value="${p.margin}" oninput="S.products[U.cur].margin=+this.value;save();$('mv').textContent=this.value+'%'" onchange="render()"><div class="chips">${[0,25,50,75,100].map(m=>`<button class="chip ${p.margin===m?"on":""}" onclick="setM(${m})">${m}%</button>`).join("")}</div>
+  <h3>Como calcular</h3><div class="chips" style="margin-top:0"><button class="chip ${p.mode!=="cost"?"on":""}" onclick="setBase('price')">Sobre o preço de venda</button><button class="chip ${p.mode==="cost"?"on":""}" onclick="setBase('cost')">Sobre o custo</button></div><p class="mute sm">${p.mode==="cost"?"Como na sua planilha: soma a margem em cima do custo. O ganho real fica menor (50% sobre o custo vira 33% do preço).":"Recomendado: garante que o ganho escolhido sobra mesmo depois das taxas."}</p>`;btn=`<button class="btn" onclick="U.step=3;render();scrollTo(0,0)">${ic("arrow",24)} Próximo: ver preço</button>`}
+  if(st===3){const ch=U.ch||"ifood",c=calc(p,ch),row=(a,b)=>`<div class="price" style="padding:8px 0;border-top:1px solid var(--line)"><span class="mute">${a}</span><span>${b}</span></div>`;const own=hasOwn(p),isOwnCh=ch==="own",cmp=CH.filter(x=>x[0]!=="own").map(([k,n])=>`<div class="price sm" style="padding:8px 0;border-top:1px solid var(--line)"><b>${n}</b><span><span class="mute">app</span> <b>${PR(priceFor(p,k,false))}</b> &nbsp; <span class="mute">próprio</span> <b>${PR(priceFor(p,k,true))}</b></span></div>`).join("");body=`<p class="kick">Passo 3 de 3 · preço de venda</p>${chkTag()}${isOwnCh?"":`<div class="card" style="padding:12px 14px"><b>Tem entregador próprio?</b><p class="mute sm" style="margin:2px 0 10px">${own?"Você entrega. A taxa do app é menor e entra o custo de motoboy/entrega.":"O app entrega. A taxa é maior e o custo de motoboy/entrega não entra."}</p><div class="chips" style="margin:0"><button class="chip ${own?"on":""}" onclick="setOwn(true)">Sim</button><button class="chip ${!own?"on":""}" onclick="setOwn(false)">Não</button></div></div>`}<div class="chips" style="margin:10px 0">${CH.map(([k,n])=>`<button class="chip ${ch===k?"on":""}" onclick="U.ch='${k}';render()">${n}</button>`).join("")}</div><div class="total"><div><span>Vender a</span><b>${isFinite(c.price)?R(c.price):"-"}</b></div></div>${isOwnCh?feeBox(c):""}<div class="card" style="margin-top:12px"><b style="font-size:1.0625rem">Visão geral</b>${[["Insumos",R(c.ins)],["Entrega",R(c.ent)],["Taxa cartão",R(c.card)],["Taxa app",R(c.app)],["Impostos",R(c.tax)],["Outros",R(c.oth)]].map(r=>row(r[0],r[1])).join("")}<div class="price" style="padding:10px 0 4px;border-top:1px solid var(--line)"><b>Lucro líquido</b><b class="v">${isFinite(c.lucro)?R(c.lucro):"-"}</b></div><div class="price"><b>Margem real</b><b>${isFinite(c.real)?c.real.toFixed(2).replace(".",",")+"%":"-"}</b></div></div>${isFinite(c.price)?"":isNaN(feeOf(ch,own))&&ch!=="own"?`<div class="err">Informe a taxa deste canal em Taxas e canais.</div>`:`<div class="err">Com essa margem e as taxas deste canal não dá para calcular o preço sobre a venda. Diminua a margem ou use "Sobre o custo".</div>`}${tools(p,ch,own)}<div class="card" style="margin-top:12px"><b style="font-size:1.0625rem">Comparar canais</b><p class="mute sm" style="margin:2px 0 6px">Preço de venda com entregador do app e com entregador próprio.</p>${cmp}</div><p class="mute sm">Cartão, impostos e outros ficam em Taxas e canais.</p>`;btn=`<button class="btn" onclick="go('home')">Concluir</button>`}
+  a.innerHTML=`<button class="back" onclick="${st>1?"U.step--;render()":"go('home')"}">${ic("left")} Voltar</button><h2 style="margin-bottom:0">${esc(p.name)||"Produto"}</h2><div class="steps">${["Itens","Ganho","Preço"].map((n,i)=>`<div class="${st===i+1?"on":""}"><i>${i+1}</i>${n}</div>`).join("")}</div>${body}<div class="bar"><div>${btn}</div></div>`}}
+
+const cats=()=>[...new Set(S.products.map(p=>p.cat).filter(Boolean))],hit=p=>(!U.q||p.name.toLowerCase().includes(U.q.toLowerCase()))&&(!U.cf||p.cat===U.cf);
+const back=`<button class="back noprint" onclick="go('home')">${ic("left")} Voltar</button>`;
+const pf=(p,k,o,pr)=>{const c=calc(p,k,o);return pr-c.ins-c.ent-pr*(feeOf(k,o)+(S.fees.card||0)+(S.fees.tax||0)+(S.fees.other||0))/100};
+const psy=x=>{let r=Math.ceil(x)-.1;if(r<x)r+=1;return +r.toFixed(2)};
+const chkTag=()=>{const d=S.fees.chk,t=d?new Date(d+"T12:00"):null,old=!t||Date.now()-t>60*864e5;return`<p style="margin:.5rem 0">${old?`<span class="tag">${ic("warn",18)} ${t?"Taxas conferidas em "+t.toLocaleDateString("pt-BR")+". Confira de novo.":"Taxas sem data de conferência. Confira no app."}</span>`:`<span class="mute sm">Taxas conferidas em ${t.toLocaleDateString("pt-BR")}</span>`}</p>`};
+function tools(p,ch,own){const c=calc(p,ch,own);if(!isFinite(c.price))return"";const ps=psy(c.price),l1=pf(p,ch,own,ps),base=num(p.sell)||c.price,d=U.disc||0,np=base*(1-d/100),lp=pf(p,ch,own,np);
+return`<div class="card" style="margin-top:12px"><b style="font-size:1.0625rem">Preço psicológico</b><div class="price" style="margin-top:8px"><span class="mute">Calculado ${R(c.price)}</span><b class="v">${R(ps)}</b></div><p class="mute sm" style="margin-top:6px">Lucro por venda: ${R(c.lucro)} → ${R(l1)} (${l1>=c.lucro?"+":"-"}${R(Math.abs(l1-c.lucro))})</p></div><div class="card"><b style="font-size:1.0625rem">Simulador de promoção</b><label>Preço que cobro hoje (opcional)</label><div class="in pre"><input type="number" inputmode="decimal" step="any" value="${p.sell||""}" oninput="upd('',0,'sell',this.value)" onchange="logSell(U.cur,this.value);render()"><i>R$</i></div><div class="price" style="margin-top:12px"><span>E se eu der desconto de</span><b id="dv">${d}%</b></div><input type="range" min="0" max="50" value="${d}" oninput="U.disc=+this.value;$('dv').textContent=this.value+'%'" onchange="render()"><div class="price sm"><span class="mute">Preço com desconto</span><b>${R(np)}</b></div><div class="price" style="margin-top:6px"><b>Lucro que sobra</b><b class="v" style="${lp<0?"color:var(--red)":""}">${R(lp)}</b></div>${lp<0?'<p class="sm" style="color:var(--red);margin-top:6px">Você perde dinheiro em cada venda.</p>':""}</div>`}
+const comboUI=p=>{const o=S.products.filter(x=>x!==p);return`<h3>Combo e adicional</h3><div class="chips" style="margin:0 0 8px"><button class="chip ${p.add?"on":""}" onclick="S.products[U.cur].add=!S.products[U.cur].add;save();render()">É um adicional (preço próprio)</button></div>${(p.combo||[]).map((c,i)=>`<div class="card" style="padding:10px"><div class="row" style="align-items:center"><div style="flex:4"><select onchange="cbS(${i},'id',+this.value)">${o.map(x=>`<option value="${x.id}" ${x.id===c.id?"selected":""}>${esc(x.name)}</option>`).join("")}</select></div><div style="flex:2"><input type="number" class="mini" value="${c.q}" oninput="cbS(${i},'q',this.value)"></div><button class="del2" style="flex:0 0 24px" onclick="cbD(${i})" aria-label="Remover">${ic("trash",24)}</button></div></div>`).join("")}${o.length?`<button class="btn sec" onclick="cbA()">Adicionar produto ao combo</button>`:""}`};
+const cbS=(i,k,v)=>{S.products[U.cur].combo[i][k]=v;save();const t=$("tot");if(t)t.textContent=R(cost(S.products[U.cur]))};
+const cbD=i=>{S.products[U.cur].combo.splice(i,1);save();render()};
+const cbA=()=>{const p=S.products[U.cur],o=S.products.find(x=>x!==p);(p.combo=p.combo||[]).push({id:o.id,q:1});save();render()};
+Object.assign(VIEWS,{
+rank:()=>{const R2=S.products.filter(ok).map(p=>{const o=hasOwn(p),ls=CH.map(([k,n])=>{const c=calc(p,k,o);return[n,pf(p,k,o,num(p.sell)||c.price)]}).filter(x=>isFinite(x[1]));return{p,ls,m:ls.reduce((a,x)=>a+x[1],0)/(ls.length||1)}}).filter(r=>r.ls.length).sort((a,b)=>b.m-a.m);return back+`<h2>Lucro por produto</h2><p class="mute" style="margin-bottom:1rem">Do que mais dá lucro ao que menos dá. Usa o preço que você cobra hoje (informe no passo 3 do produto) ou o preço calculado.</p>${R2.map(r=>`<div class="card"><div class="price"><b>${esc(r.p.name)}</b><b class="v" style="${r.m<0?"color:var(--red)":""}">${R(r.m)}</b></div>${r.ls.map(x=>`<div class="price sm" style="margin-top:4px"><span class="mute">${x[0]}</span><b style="${x[1]<0?"color:var(--red)":""}">${R(x[1])}${x[1]<0?" · prejuízo":""}</b></div>`).join("")}</div>`).join("")||'<p class="mute">Preencha os preços de um produto.</p>'}`}});
+const nz=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+async function bulk(l,i,el){const o=num(el.dataset.o),n=num(el.value),src=S.products[U.cur][l][i],b=nz(src.n);if(!o||!n||o===n||b.length<3)return;const m=[],ps=new Set();S.products.forEach(p=>["items","deliv"].forEach(L=>(p[L]||[]).forEach(t=>{const a=nz(t.n);if(t!==src&&num(t.pack)&&a&&(a.includes(b)||b.includes(a))){m.push(t);ps.add(p.id)}})));if(!m.length)return;const f=n/o,nm=[...new Set(m.map(t=>t.n))].join(", ");if(await cf(`Ajustar todos os itens que contêm "${src.n}" de ${R(o)} para ${R(n)}?\n\n${m.length} item(ns) em ${ps.size} produto(s): ${nm}.\nCada um ${f>=1?"sobe":"cai"} ${Math.abs((f-1)*100).toFixed(1).replace(".",",")}%.`)){m.forEach(t=>t.pack=+(num(t.pack)*f).toFixed(2));save();render()}}
+
+Object.assign(P,{dots:'<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'});
+const CKK="pc_ck",ckGet=()=>{try{return localStorage.getItem(CKK)}catch{return null}};
+function ckSet(v){try{localStorage.setItem(CKK,v)}catch{}ckShow()}
+function ckShow(open){const e=$("ck");if(!e)return;if(ckGet()&&!open){e.innerHTML="";return}e.innerHTML=`<div role="dialog" aria-label="Aviso de cookies"><b>Cookies</b><p class="mute sm" style="margin:4px 0 12px">Usamos cookies e armazenamento local para manter você conectado e lembrar suas preferências. <button class="lnk" style="font-weight:700" onclick="go('priv')">Saiba mais</button></p><div class="row"><button class="btn sec" onclick="ckSet('essential')">Só essenciais</button><button class="btn" style="font-size:.9375rem;height:2.75rem" onclick="ckSet('all')">Aceitar</button></div></div>`}
+const backM=`<button class="back noprint" onclick="go('more')">${ic("left")} Mais</button>`;
+const FAQ=[
+["Como o Preço Certo calcula o preço de venda?","Você cadastra os itens de cada produto (ingredientes, embalagens e custos de entrega), escolhe quanto quer ganhar e o app soma o custo com as taxas do canal (comissão do app, cartão, impostos e outros). O resultado é o preço que garante o seu ganho depois de todas as taxas."],
+["Qual a diferença entre calcular sobre o preço de venda e sobre o custo?","Sobre o preço de venda (recomendado): o ganho escolhido é a fatia do preço que sobra para você depois de custo e taxas. Sobre o custo: o app soma a margem em cima do custo, como em muitas planilhas. Nesse caso o ganho real fica menor (50% sobre o custo equivale a 33% do preço)."],
+["Como funciona a taxa de entrega do delivery próprio?","Em Taxas e canais, informe quanto você cobra do cliente pela entrega. Marque se esse valor vai direto para o entregador. Se for, ele não conta como faturamento seu e o custo de motoboy deixa de entrar no preço do produto. Se ficar com você, o valor abate o custo de entrega no preço. O app mostra o preço do produto, a taxa e o total que o cliente paga."],
+["O que é entregador do app e entregador próprio?","Com entregador do app, a plataforma faz a entrega e cobra uma taxa maior. Com entregador próprio, a taxa do app é menor e você assume o custo de entrega. O app calcula os dois cenários para você comparar."],
+["Como cadastro meus ingredientes e embalagens?","Dentro do produto, adicione cada item com a quantidade comprada, o valor pago e a quantidade usada. O app calcula o custo de cada item, inclusive com perda ou quebra, e divide pelo rendimento da receita."],
+["Como funciona o teste grátis e a assinatura?","Depois de criar a conta você tem 7 dias grátis com tudo liberado. Passado esse prazo, o app fica bloqueado até você assinar o plano Completo, que custa R$ 19,90 por mês. Seus dados ficam guardados enquanto isso. Veja os detalhes em Mais, Planos e assinatura."],
+["Meus dados ficam salvos?","Sim. Seus produtos, despesas e demais informações ficam salvos na sua conta e acompanham você quando entra de novo. Veja a Política de privacidade para mais detalhes."],
+["Como mudo ou excluo meus dados?","Você pode editar ou apagar produtos e lançamentos diretamente no app. Para excluir a conta ou pedir seus dados, envie uma mensagem pela aba Enviar sugestão."],
+["Como envio uma ideia ou aviso de problema?","Em Mais, toque em Enviar sugestão. Lemos todas as mensagens e usamos para melhorar o app."]
+];
+const photoCard=()=>`<div class="card" style="display:flex;align-items:center;gap:1rem"><span class="avatar" style="width:3.75rem;height:3.75rem;flex:none;cursor:default">${U.photo?`<img src="${U.photo}" alt="Sua foto">`:ic("user",30)}</span><div style="flex:1;min-width:0"><b style="font-size:1.0625rem">Foto de perfil</b><p class="mute sm" style="margin-top:2px">${U.perr?esc(U.perr):"Opcional"}</p><div style="display:flex;gap:1rem;margin-top:.5rem"><button class="lnk" onclick="$('pfile').click()">${U.photo?"Trocar foto":"Adicionar foto"}</button>${U.photo?`<button class="lnk" style="color:#dc2626" onclick="setPhoto(null)">Remover</button>`:""}</div><input id="pfile" type="file" accept="image/*" hidden onchange="setPhoto(this.files[0]);this.value=''"></div></div>`;
+async function setPhoto(f){U.perr="";try{let d="";if(f){const img=await new Promise((ok,no)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=()=>no(Error("Não foi possível abrir essa imagem."));i.src=u});const z=256,c=document.createElement("canvas");c.width=c.height=z;const m=Math.min(img.width,img.height),x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,z,z);x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,z,z);d=c.toDataURL("image/jpeg",.85)}await api("/api/photo","POST",{photo:d});U.photo=d}catch(e){U.perr=e.message||"Não foi possível salvar a foto."}render()}
+const mrow=(v,t,d)=>`<button class="card" onclick="${v}"><span style="position:absolute;right:1.125rem;top:50%;margin-top:-0.75rem;color:var(--mute)">${ic("right")}</span><b style="font-size:1.0625rem">${t}</b><p class="mute sm" style="margin-top:2px">${d}</p></button>`;
+const sec=(t,b)=>`<h3>${t}</h3><p>${b}</p>`;
+async function sendSug(){const g=U.sg||(U.sg={t:"Sugestão",m:"",e:""});if(g.m.trim().length<5){U.err="Escreva pelo menos algumas palavras.";return render()}try{await api("/api/suggest","POST",{t:g.t,m:g.m.trim(),e:g.e.trim(),at:Date.now(),user:(U.user&&U.user.email)||""});U.sgOk=true;U.err="";U.sg=null}catch(e){U.err="Não foi possível enviar agora. Tente de novo."}render()}
+Object.assign(VIEWS,{
+more:()=>hd("Mais","Ajuda e informações")+`<div style="margin-top:14px">${photoCard()}${mrow("go('plans')","Planos e assinatura",isPro()?"Plano Completo ativo":has()?"Teste grátis: "+daysLeft()+" dia(s) restantes":"Teste encerrado · assine para continuar")}${mrow("go('sales')","Vendas","Registre vendas e dê baixa no estoque")}${mrow("go('rep')","Relatórios e fichas","PDF, Excel e ficha de custo dos produtos")}${mrow("go('phist')","Histórico de preços","Mudanças de custo e de preço de venda")}${mrow("go('equipe')","Equipe","Controle de funcionários e pagamentos")}${mrow("go('pess')","Controle pessoal","Suas receitas e despesas pessoais")}${mrow("go('rank')","Lucro por produto","Compare quais produtos rendem mais")}${mrow("go('faq')","Perguntas frequentes","Tire dúvidas sobre preços, taxas e entrega")}${mrow("U.sgOk=false;go('sug')","Enviar sugestão","Ideias, melhorias, problemas ou elogios")}${mrow("go('about')","Quem somos","Conheça o Preço Certo")}${mrow("go('priv')","Privacidade e cookies","Como cuidamos dos seus dados")}${mrow("go('terms')","Termos de uso","Regras de uso do aplicativo")}${mrow("ckShow(true)","Preferências de cookies","Mude sua escolha sobre cookies")}</div>`,
+faq:()=>backM+`<h2>Perguntas frequentes</h2><p class="mute" style="margin-bottom:1.125rem">Toque na pergunta para ver a resposta.</p><div class="faq">${FAQ.map(q=>`<details><summary>${q[0]}</summary><p>${q[1]}</p></details>`).join("")}</div><div class="card" style="margin-top:6px"><b>Não achou o que procurava?</b><p class="mute sm" style="margin:2px 0 10px">Mande sua pergunta pela aba de sugestões.</p><button class="btn sec" onclick="U.sgOk=false;go('sug')">Enviar mensagem</button></div>`,
+sug:()=>{const g=U.sg||(U.sg={t:"Sugestão",m:"",e:""});if(U.sgOk)return backM+`<h2>Obrigado!</h2><div class="card"><b>Recebemos a sua mensagem.</b><p class="mute sm" style="margin:4px 0 12px">Ela ajuda a melhorar o Preço Certo para todo mundo.</p><button class="btn sec" onclick="U.sgOk=false;render()">Enviar outra</button></div>`;return backM+`<h2>Enviar sugestão</h2><p class="mute" style="margin-bottom:1rem">Conte o que podemos melhorar, relate um problema ou deixe um comentário.</p><label style="margin-top:0">Assunto</label><div class="chips" style="margin:0 0 4px">${["Sugestão","Problema","Elogio","Outro"].map(t=>`<button class="chip ${g.t===t?"on":""}" onclick="U.sg.t='${t}';render()">${t}</button>`).join("")}</div><label>Sua mensagem</label><textarea placeholder="Escreva aqui..." maxlength="2000" oninput="U.sg.m=this.value">${esc(g.m)}</textarea><label>E-mail para resposta (opcional)</label><input type="email" inputmode="email" value="${esc(g.e)}" placeholder="voce@email.com" oninput="U.sg.e=this.value">${U.err?`<div class="err" style="margin-top:10px">${esc(U.err)}</div>`:""}<button class="btn" style="margin-top:16px" onclick="sendSug()">Enviar</button>`},
+about:()=>backM+`<div class="doc"><h2>Quem somos</h2>${sec("O que é o Preço Certo","O Preço Certo ajuda donos de delivery a descobrir quanto cobrar. Você cadastra o custo de cada produto, as taxas de cada aplicativo (iFood, 99, Keeta) e do delivery próprio, escolhe quanto quer ganhar e vê o preço de venda certo em cada canal.")}${sec("Por que criamos","Muita gente vende bastante e ainda assim sobra pouco, porque as taxas e os custos de entrega comem o lucro sem ninguém perceber. Queremos que cada pedido deixe o ganho que você planejou.")}${sec("O que você encontra aqui","Cálculo de custo e preço por canal, controle de despesas e faturamento, equipe, visão financeira do ano e controle pessoal, tudo num só lugar e em português simples.")}${sec("Fale com a gente","Tem dúvida, ideia ou encontrou um problema? Use a aba Enviar sugestão. Lemos todas as mensagens.")}</div>`,
+priv:()=>backM+`<div class="doc"><h2>Privacidade e cookies</h2><p>Última atualização: outubro de 2026.</p>${sec("Dados que coletamos","Nome e e-mail do cadastro, e as informações que você digita no app: produtos, custos, taxas, despesas, faturamento, equipe e finanças pessoais. Também podemos receber as mensagens que você envia em Enviar sugestão.")}${sec("Para que usamos","Para fazer o app funcionar, salvar o seu trabalho na sua conta, manter você conectado, responder mensagens e melhorar o aplicativo. Não vendemos seus dados.")}${sec("Cookies e armazenamento local","Usamos cookies e armazenamento local essenciais, como o que mantém você conectado e guarda a sua escolha sobre cookies. Não usamos cookies de publicidade. Você pode mudar a sua escolha a qualquer momento em Mais, Preferências de cookies.")}${sec("Seus direitos","Você pode pedir acesso, correção ou exclusão dos seus dados, conforme a LGPD (Lei 13.709/2018). Envie o pedido pela aba Enviar sugestão.")}</div>`,
+terms:()=>backM+`<div class="doc"><h2>Termos de uso</h2><p>Última atualização: outubro de 2026.</p>${sec("Uso do aplicativo","O Preço Certo é uma ferramenta de apoio para calcular preços e acompanhar finanças. Você é responsável pelas informações que cadastra e pelas decisões que toma com elas.")}${sec("Valores são estimativas","Os preços e resultados são calculados a partir dos dados que você informa. As taxas dos aplicativos de entrega mudam e devem ser conferidas por você no seu contrato.")}${sec("Sua conta","Mantenha sua senha em segurança. Você pode parar de usar o app quando quiser e pedir a exclusão da sua conta.")}${sec("Alterações","Podemos atualizar o app e estes termos. Quando houver mudança importante, avisaremos no aplicativo.")}</div>`
+});
+
+const INS=()=>S.ins||(S.ins=[]),HIS=()=>S.hist||(S.hist=[]);
+const upi=(i,k,v,n)=>{INS()[i][k]=n?num(v):v;save()};
+const addIns=()=>{INS().push({id:"i"+Date.now(),n:"",t:"Ingrediente",sup:"",pack:0,yield:1,u:"g",q:0,min:0});save();render()};
+const delIns=async i=>{if(!await cf("Remover insumo?"))return;INS().splice(i,1);save();render()};
+const usedBy=g=>S.products.filter(p=>[...(p.items||[]),...(p.deliv||[])].some(t=>t.ref===g.id));
+async function buy(i){const g=INS()[i],r=await mdl("Registrar compra: "+esc(g.n||"insumo"),`<label>Quantidade comprada (${US[g.u]||g.u})</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 2"><label>Valor pago por essa compra (R$)</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 117">`,"Registrar");if(!r)return;const q=num(r[0]),v=num(r[1]);if(!q||!v){info("Preencha a quantidade e o valor pago.");return}const o=num(g.yield)?num(g.pack)/num(g.yield):0,pa=usedBy(g),ca=pa.map(x=>cost(x));g.q=num(g.q)+q;g.pack=v;g.yield=q;HIS().push({id:g.id,n:g.n,o,v:v/q,u:g.u,at:Date.now(),pc:pa.map((x,j)=>({n:x.name,a:ca[j],b:cost(x)}))});save();render()}
+const gm=(p)=>{const o=hasOwn(p),c=calc(p,"own",o),pr=num(p.sell)||c.price,l=pf(p,"own",o,pr);return{p,l,r:pr>0?l/pr*100:NaN}};
+async function setMeta(){const r=await mdl("Meta de lucro do mês",`<label>Quanto de lucro você quer fazer por mês (R$)</label><input type="number" inputmode="decimal" step="any" placeholder="ex.: 3000" value="${num(S.meta)||""}">`,"Salvar");if(!r)return;S.meta=Math.max(0,num(r[0]));save();render()}
+Object.assign(VIEWS,{
+dash:()=>{const m=U.mes,rec=monthRec(m),des=monthDes(m),luc=rec-des,mg=rec?luc/rec*100:0,ml=num(S.meta),PL=S.products.filter(ok).map(gm).filter(x=>isFinite(x.l)).sort((a,b)=>b.l-a.l),a=PL.reduce((t,x)=>t+x.l,0)/(PL.length||1),low=INS().filter(g=>num(g.min)>0&&num(g.q)<=num(g.min));
+const tot=rec+des,pa=tot>0?rec/tot*100:0,neg=luc<0,
+row=(x,i,w)=>`<div class="rk"><span class="n ${w?"w":""}">${i+1}</span><span class="nm">${esc(x.p.name)}</span><span class="vl">${R(x.l)}<small class="mute" style="font-weight:500;font-size:.75rem"> /un.</small></span><div class="m ${w?"w":""}"><u><i style="width:${Math.max(3,Math.min(100,Math.abs(x.r)))}%"></i></u><small>${pct(x.r)}</small></div></div>`;
+return hd("Início",MESF[m]+" de "+F().ano)+mch()+(low.length?`<div class="alert"><span>Estoque baixo: ${low.slice(0,3).map(g=>esc(g.n||"sem nome")).join(", ")}${low.length>3?" e mais "+(low.length-3):""}</span><button class="lnk" onclick="go('stock')">Ver</button></div>`:"")
++`<div class="hero"><div class="lbl"><span>Lucro estimado de ${MESF[m].toLowerCase()}</span><span class="badge ${neg?"neg":""}">Margem ${pct(mg)}</span></div><b class="big ${neg?"neg":""}">${R(luc)}</b><div class="split" aria-hidden="true"><i class="a" style="width:${tot>0?pa:0}%"></i><i class="b" style="width:${tot>0?100-pa:0}%"></i></div><div class="flow"><div><span>Faturamento</span><b>${R(rec)}</b></div><div class="d"><span>Despesas e custos</span><b>${R(des)}</b></div></div></div>`
++(ml>0?`<div class="meta"><div class="price"><b>Meta de lucro</b><button class="lnk" style="padding:0" onclick="setMeta()">Alterar</button></div><div class="mbar"><i style="width:${Math.max(0,Math.min(100,luc/ml*100))}%"></i></div><p>${luc>=ml?"Meta batida!":"Faltam "+R(ml-luc)+(a>0?" · cerca de "+Math.ceil((ml-luc)/a)+" vendas":"")} · ${R(luc)} de ${R(ml)}</p></div>`:`<button class="empty" onclick="setMeta()"><p>Defina uma meta de lucro para acompanhar o mês.</p><span class="lnk" style="padding:0">Definir</span></button>`)
++(tot<=0?`<div class="empty"><p>Nenhuma venda ou despesa neste mês.</p><button class="btn" onclick="go('sales')">Registrar venda</button></div>`:"")
++`<div class="sec"><h3>Produtos mais rentáveis</h3><p class="sub">Lucro por unidade vendida e margem</p>${PL.length?PL.slice(0,3).map((x,i)=>row(x,i,0)).join(""):`<p class="mute sm" style="padding:.75rem 0">Preencha os preços dos produtos para ver o ranking.</p>`}</div>`
++(PL.length>1?`<div class="sec"><h3>Atenção: menor lucro</h3><p class="sub">Pode ser preço baixo demais.</p>${PL.slice(-2).reverse().map((x,i)=>row(x,i,x.l<=0||x.r<15)).join("")}</div>`:"")},
+stock:()=>{const L=INS(),low=L.filter(g=>num(g.min)>0&&num(g.q)<=num(g.min)),H=HIS().slice(-8).reverse();
+return hd("Estoque e insumos","Ingredientes, embalagens e compras")+(low.length?`<div class="err" style="margin:12px 0">Estoque baixo: ${low.map(g=>esc(g.n||"sem nome")).join(", ")}</div>`:"")+`<p class="mute sm" style="margin:12px 0">Cadastre o insumo, toque em "Registrar compra" com a quantidade e o valor pago e, no produto, escolha "Preço do estoque". A cada compra, o custo dos produtos é recalculado.</p>`+L.map((g,i)=>{const cu=num(g.yield)?num(g.pack)/num(g.yield):0,pr=usedBy(g);return`<div class="card"><button class="del" onclick="delIns(${i})" aria-label="Remover">${ic("trash",26)}</button><label style="margin-top:0">Insumo</label><input type="text" style="width:calc(100% - 2.5rem)" value="${esc(g.n)}" placeholder="ex.: Açaí" oninput="upi(${i},'n',this.value)"><div class="row"><div><label>Tipo</label><select onchange="upi(${i},'t',this.value)">${["Ingrediente","Embalagem","Outro"].map(t=>`<option ${g.t===t?"selected":""}>${t}</option>`).join("")}</select></div><div><label>Medida</label><select onchange="upi(${i},'u',this.value);render()">${Object.keys(UN).map(x=>`<option value="${x}" ${g.u===x?"selected":""}>${UN[x]}</option>`).join("")}</select></div></div><label>Fornecedor</label><input type="text" value="${esc(g.sup)}" oninput="upi(${i},'sup',this.value)"><div class="row"><div><label>Disponível (${US[g.u]||g.u})</label><input type="number" inputmode="decimal" step="any" value="${g.q||""}" oninput="upi(${i},'q',this.value,1)" onchange="render()"></div><div><label>Avisar abaixo de</label><input type="number" inputmode="decimal" step="any" value="${g.min||""}" oninput="upi(${i},'min',this.value,1)" onchange="render()"></div></div><div class="price" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><span class="mute">Custo por ${US[g.u]||g.u}</span><b class="v">${R(cu)}</b></div>${pr.length?`<p class="mute sm" style="margin-top:6px">Usado em: ${pr.map(x=>esc(x.name)).join(", ")}</p>`:""}<button class="btn sec" style="margin-top:10px" onclick="buy(${i})">Registrar compra</button></div>`}).join("")+`<button class="btn sec" onclick="addIns()">Adicionar insumo</button>`+(H.length?`<h3>Histórico de custos</h3>`+H.map(h=>{const g=INS().find(x=>x.id===h.id),pr=g?usedBy(g):[],d=h.o?(h.v-h.o)/h.o*100:0;return`<div class="card" style="padding:12px"><div class="price sm"><b>${esc(h.n||"Insumo")}</b><span class="mute">${new Date(h.at).toLocaleDateString("pt-BR")}</span></div><p class="sm" style="margin-top:4px">${R(h.o)} → <b>${R(h.v)}</b> por ${US[h.u]||h.u}${h.o?` (<span style="color:${d>0?"var(--red)":"var(--g)"}">${d>0?"+":""}${d.toFixed(1).replace(".",",")}%</span>)`:""}</p>${pr.length?`<p class="mute sm" style="margin-top:4px">Produtos afetados: ${pr.map(x=>esc(x.name)).join(", ")}</p>`:""}</div>`}).join(""):"")}
+});
+
+const PH=()=>S.phist||(S.phist=[]),SL=()=>S.sales||(S.sales=[]);
+function logSell(i,v){const p=S.products[i],n=num(v);if(!p||!n)return;const l=PH().filter(x=>x.pid===p.id).pop();if(l&&l.v===n)return;PH().push({pid:p.id,n:p.name,o:l?l.v:null,v:n,at:Date.now()});save()}
+function consume(p,q,sg,d){d=d||0;[...(p.items||[]).map(t=>[t,1/(num(p.rend)||1)]),...(p.deliv||[]).map(t=>[t,1])].forEach(([t,f])=>{const g=t.ref&&INS().find(x=>x.id===t.ref);if(g)g.q=num(g.q)-sg*q*f*num(t.use)/(1-Math.min(num(t.loss),90)/100)});(p.combo||[]).forEach(c=>{const x=S.products.find(y=>y.id===c.id);if(x&&x!==p&&d<3)consume(x,q*num(c.q),sg,d+1)})}
+const FK={din:"Dinheiro",car:"Cartão",pix:"Pix",out:"Outro"};
+function addSale(){const u=U.sl||{},p=S.products.find(x=>x.id==u.pid)||S.products[0];if(!p)return;const q=num(u.q)||1,c=calc(p,"own",hasOwn(p)),pr=num(u.pr)||num(p.sell)||c.price;if(!isFinite(pr)||pr<=0){info("Informe o preço de venda.");return}const k=u.k||"pix",d=new Date(),m=d.getMonth(),dd=d.getDate(),f=F(),day=((f.fat[m]||(f.fat[m]={}))[dd]||(f.fat[m][dd]={}));day[k]=num(day[k])+pr*q;consume(p,q,1);SL().push({id:"s"+Date.now(),pid:p.id,n:p.name,q,pr,k,m,d:dd,at:Date.now()});U.sl={pid:p.id,q:1,pr:"",k};save();render()}
+async function delSale(i){const x=SL()[i],p=S.products.find(y=>y.id===x.pid);if(!await cf("Desfazer esta venda? O estoque e o faturamento voltam."))return;if(p)consume(p,x.q,-1);const day=((F().fat[x.m]||{})[x.d]);if(day)day[x.k]=Math.max(0,num(day[x.k])-x.pr*x.q);SL().splice(i,1);save();render()}
+function csv(){const m=U.mes,rec=monthRec(m),des=monthDes(m),q=v=>'"'+String(v).replace(/"/g,'""')+'"',n=v=>isFinite(v)?v.toFixed(2).replace(".",","):"",L=[["Relatório Preço Certo",MESF[m]+" de "+F().ano],[],["Faturamento",n(rec)],["Despesas",n(des)],["Lucro",n(rec-des)],[],["Produto","Custo","Preço iFood (entregador do app)","Preço delivery próprio","Lucro por venda (próprio)","Margem %"]];S.products.filter(ok).forEach(p=>{const g=gm(p);L.push([p.name,n(cost(p)),n(priceFor(p,"ifood",false)),n(priceFor(p,"own")),n(g.l),n(g.r)])});L.push([],["Despesa","Valor"]);expList(m).forEach(e=>L.push([e.n,n(num(e.v))]));const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+L.map(r=>r.map(q).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="relatorio-preco-certo-"+MES[m]+".csv";a.click()}
+const dl=(o,v)=>o?((v-o)/o*100):0,dp=(o,v)=>o?` (<span style="color:${v>o?"var(--red)":"var(--g)"}">${v>o?"+":""}${dl(o,v).toFixed(1).replace(".",",")}%</span>)`:"";
+Object.assign(VIEWS,{
+sales:()=>{const u=U.sl||(U.sl={pid:(S.products[0]||{}).id,q:1,pr:"",k:"pix"}),p=S.products.find(x=>x.id==u.pid)||S.products[0],L=SL().map((x,i)=>[x,i]).slice(-10).reverse();if(!p)return hd("Vendas","Registre o que vendeu")+'<p class="mute" style="margin-top:14px">Cadastre um produto primeiro.</p>';const c=calc(p,"own",hasOwn(p)),dfl=num(p.sell)||c.price;
+return hd("Vendas","Cada venda dá baixa no estoque e entra no faturamento")+`<div class="card" style="margin-top:14px"><label style="margin-top:0">Produto</label><select onchange="U.sl.pid=this.value;U.sl.pr='';render()">${S.products.map(x=>`<option value="${x.id}" ${x.id==p.id?"selected":""}>${esc(x.name)}</option>`).join("")}</select><div class="row"><div><label>Quantidade</label><input type="number" inputmode="decimal" value="${u.q}" oninput="U.sl.q=this.value"></div><div><label>Preço unitário (R$)</label><input type="number" inputmode="decimal" step="any" value="${u.pr||(isFinite(dfl)?dfl.toFixed(2):"")}" oninput="U.sl.pr=this.value"></div></div><label>Pagamento</label><div class="chips" style="margin:0">${Object.keys(FK).map(k=>`<button class="chip ${u.k===k?"on":""}" onclick="U.sl.k='${k}';render()">${FK[k]}</button>`).join("")}</div><button class="btn" style="margin-top:14px" onclick="addSale()">Registrar venda</button></div>${L.length?"<h3>Últimas vendas</h3>"+L.map(([x,i])=>`<div class="card" style="padding:12px"><div class="price sm"><b>${x.q}x ${esc(x.n)}</b><b>${R(x.pr*x.q)}</b></div><div class="price sm" style="margin-top:4px"><span class="mute">${new Date(x.at).toLocaleDateString("pt-BR")} · ${FK[x.k]}</span><button class="lnk" style="color:var(--red)" onclick="delSale(${i})">Desfazer</button></div></div>`).join(""):""}`},
+rep:()=>{const m=U.mes,rec=monthRec(m),des=monthDes(m),PL=S.products.map((p,i)=>[p,i]).filter(x=>ok(x[0])),k=(l,v)=>`<div class="card" style="margin:0;padding:12px"><span class="mute sm">${l}</span><b style="display:block;font-size:1.0625rem">${v}</b></div>`;
+return hd("Relatórios",MESF[m]+" de "+F().ano)+`<div class="noprint">${mch()}<div class="row" style="margin:12px 0"><button class="btn sec" onclick="window.print()">Imprimir / salvar PDF</button><button class="btn sec" onclick="csv()">Baixar Excel</button></div></div><div class="g2" style="margin:12px 0">${k("Faturamento",R(rec))}${k("Despesas",R(des))}${k("Lucro",R(rec-des))}${k("Margem",pct(rec?(rec-des)/rec*100:0))}</div><h3>Produtos e preços recomendados</h3>`+(PL.map(([p,i])=>{const g=gm(p);return`<div class="card"><div class="price"><b>${esc(p.name)}</b><button class="lnk noprint" style="font-weight:700" onclick="go('ficha',${i})">Ficha</button></div>${[["Custo",R(cost(p))],["iFood (entregador do app)",PR(priceFor(p,"ifood",false))],["Delivery próprio",PR(priceFor(p,"own"))],["Lucro por venda",R(g.l)+" · "+pct(g.r)]].map(r=>`<div class="price sm" style="margin-top:4px"><span class="mute">${r[0]}</span><b>${r[1]}</b></div>`).join("")}</div>`}).join("")||'<p class="mute">Preencha os preços dos produtos.</p>')+`<h3>Despesas do mês</h3><div class="card">${expList(m).filter(e=>num(e.v)).map(e=>`<div class="price sm"><span>${esc(e.n)}</span><b>${R(num(e.v))}</b></div>`).join("")||'<p class="mute sm">Sem despesas lançadas.</p>'}</div>`},
+ficha:()=>{const p=S.products[U.cur];if(!p)return backM;const rd=num(p.rend)||1,row=it=>{const r=res(it),c=sum([it]),lc=c-sum([{...it,loss:0}]),u=US[unit(r)]||"";return`<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="price sm"><span>${esc(it.n||it.k||"Item")}</span><b>${R(c)}</b></div><p class="mute sm">usa ${num(it.use)}${u}${num(it.use)&&num(r.yield)?" · embalagem rende "+(num(r.yield)/num(it.use)).toFixed(1).replace(".",",")+" porções":""}${num(it.loss)?" · perda "+num(it.loss)+"% ("+R(lc)+")":""}</p></div>`},ls=[...(p.items||[]),...(p.deliv||[])].reduce((a,it)=>a+sum([it])-sum([{...it,loss:0}]),0);
+return`<button class="back noprint" onclick="go('rep')">${ic("left")} Relatórios</button><h2>Ficha técnica: ${esc(p.name)}</h2><p class="mute sm">${esc(p.cat||"")} · rendimento: ${rd} porção(ões)</p><h3>Ingredientes e embalagens</h3><div class="card">${(p.items||[]).map(row).join("")||'<p class="mute sm">Sem itens.</p>'}</div>${(p.deliv||[]).length?`<h3>Entrega</h3><div class="card">${p.deliv.map(row).join("")}</div>`:""}${(p.combo||[]).length?`<h3>Combo</h3><div class="card">${p.combo.map(c=>{const x=S.products.find(y=>y.id===c.id);return x?`<div class="price sm"><span>${num(c.q)}x ${esc(x.name)}</span><b>${R(cost(x)*num(c.q))}</b></div>`:""}).join("")}</div>`:""}<div class="card"><div class="price sm"><span class="mute">Custo da receita</span><b>${R(sum(p.items))}</b></div><div class="price sm" style="margin-top:4px"><span class="mute">Perdas e desperdício</span><b>${R(ls)}</b></div><div class="price" style="margin-top:8px"><b>Custo por porção</b><b class="v">${R(cost(p))}</b></div></div><h3>Preços recomendados</h3><div class="card">${CH.map(([k,n])=>`<div class="price sm"><span>${n}${k==="own"?"":" (entregador do app)"}</span><b>${PR(priceFor(p,k,k==="own"?undefined:false))}</b></div>`).join("")}</div><div class="card noprint"><label style="margin-top:0">Preço de venda hoje (R$)</label><input type="number" inputmode="decimal" step="any" value="${p.sell||""}" oninput="S.products[U.cur].sell=this.value;save()" onchange="logSell(U.cur,this.value);render()"></div><button class="btn noprint" onclick="window.print()">Imprimir ficha</button>`},
+phist:()=>{const H=HIS().slice(-15).reverse(),P=PH().slice(-15).reverse();return hd("Histórico de preços","Custos dos insumos e preços de venda")+`<h3>Preço de venda</h3>`+(P.length?P.map(h=>`<div class="card" style="padding:12px"><div class="price sm"><b>${esc(h.n)}</b><span class="mute">${new Date(h.at).toLocaleDateString("pt-BR")}</span></div><p class="sm" style="margin-top:4px">${h.o?R(h.o)+" → ":""}<b>${R(h.v)}</b>${dp(h.o,h.v)}</p></div>`).join(""):'<p class="mute sm">As mudanças aparecem quando você altera o preço de venda na ficha ou no simulador.</p>')+`<h3>Custo dos insumos</h3>`+(H.length?H.map(h=>`<div class="card" style="padding:12px"><div class="price sm"><b>${esc(h.n||"Insumo")}</b><span class="mute">${new Date(h.at).toLocaleDateString("pt-BR")}</span></div><p class="sm" style="margin-top:4px">${R(h.o)} → <b>${R(h.v)}</b> por ${US[h.u]||h.u}${dp(h.o,h.v)}</p>${(h.pc||[]).map(x=>`<p class="mute sm" style="margin-top:2px">${esc(x.n)}: custo ${R(x.a)} → ${R(x.b)}</p>`).join("")}</div>`).join(""):'<p class="mute sm">As mudanças aparecem quando você registra compras no Estoque.</p>')}
+});
+
+Object.assign(P,{lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'});
+
+let MR=null;
+function mdlEnd(v){const d=$("mdl"),r=MR,vals=[...document.querySelectorAll("#mdl input")].map(i=>i.value);if(d)d.remove();MR=null;if(r)r(v?vals:null)}
+const mdl=(t,body,ok)=>new Promise(r=>{const o=$("mdl");if(o)o.remove();MR=r;const d=document.createElement("div");d.id="mdl";d.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:99;padding:18px";d.innerHTML=`<div role="dialog" style="background:var(--bg);border-radius:20px;width:100%;max-width:420px;padding:18px;max-height:90vh;overflow:auto"><h3 style="margin:0 0 4px">${t}</h3>${body}<div class="row" style="margin-top:16px"><button class="btn sec" onclick="mdlEnd(false)">Cancelar</button><button class="btn" style="font-size:1rem;height:2.75rem" onclick="mdlEnd(true)">${ok}</button></div></div>`;document.body.appendChild(d)});
+const cf=m=>mdl("Confirmar",`<p class="mute" style="margin-top:6px">${esc(m)}</p>`,"Sim").then(v=>!!v);
+const info=m=>mdl("Aviso",`<p class="mute" style="margin-top:6px">${esc(m)}</p>`,"OK");
+const _render=render;render=function(){try{_render();const c=document.querySelector(".mch .chip.on");if(c){const b=c.parentElement;b.scrollLeft=c.offsetLeft-(b.clientWidth-c.offsetWidth)/2}}catch(e){const a=$("app");if(a)a.innerHTML=`<div class="card" style="margin-top:20px"><b>Ops, algo deu errado nesta tela.</b><p class="mute sm" style="margin:6px 0 12px">${esc(e&&e.message)}</p><button class="btn sec" onclick="go('home')">Ir para Produtos</button></div>`}};
+const PRICE=19.9,TD=7,isPro=()=>S.plan==="pro",lim=()=>Infinity,trialEnd=()=>(S.trial||Date.now())+TD*864e5,daysLeft=()=>Math.max(0,Math.ceil((trialEnd()-Date.now())/864e5)),has=()=>isPro()||Date.now()<trialEnd(),OPENV=["plans","more","faq","sug","about","priv","terms"],ensTrial=()=>{if(!S.trial){S.trial=Date.now();save()}};
+const PROV=["dash","stock","desp","fin","equipe","pess","sales","rep","ficha","phist","rank"];
+const FN={dash:"O painel financeiro",stock:"O controle de estoque e insumos",desp:"O controle de despesas mensais",fin:"Os relatórios financeiros",equipe:"A gestão de equipe e salários",pess:"O controle pessoal",sales:"O registro de vendas",rep:"A exportação em PDF e Excel",ficha:"A ficha técnica",phist:"O histórico de custo e preço",rank:"A análise de lucro por produto"};
+const FREEL=["Até 5 produtos cadastrados","Calculadora de precificação","Simulação de margem de lucro"];
+const PROL=["Calculadora de precificação e simulação de margem de lucro","Produtos ilimitados","Precificação automática por canal","Simulação de preço e lucro (promoções e preço psicológico)","Controle de despesas mensais","Gestão de equipe e salários","Ficha técnica e receitas","Controle de estoque e insumos, com baixa nas vendas","Relatórios financeiros","Exportação em PDF e Excel","Histórico de custo e preço","Assistente de precificação (em breve)"];
+const li=x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:.9375rem"><span style="color:var(--g);flex:none">${ic("check",18)}</span><span>${x}</span></div>`;
+const lock=m=>{go("plans");U.why=m||"Este recurso é do plano Completo.";render()};
+const lockCard=t=>`<div class="card" style="margin-top:12px"><b style="font-size:1.0625rem">${t}</b><p class="mute sm" style="margin:4px 0 10px">Disponível no plano Completo.</p><button class="btn sec" onclick="lock()">${ic("lock",18)} Ver plano Completo</button></div>`;
+async function subscribe(){try{const d=await api("/api/mercadopago/checkout","POST",{});location.href=d.url}catch(x){alert(x.message)}}
+async function cancelPlan(){if(!await cf("Você será levado ao portal seguro de pagamentos para gerenciar ou cancelar a assinatura. Continuar?"))return;try{const d=await api("/api/mercadopago/checkout","POST",{});location.href=d.url}catch(x){alert(x.message)}}
+Object.assign(VIEWS,{
+plans:()=>{const pro=isPro(),on=has(),d=daysLeft(),w=U.why;return`<button class="back noprint" onclick="go('more')">${ic("left")} Mais</button><h2>Plano Completo</h2>`+(pro?"":on?`<div class="card" style="background:var(--gl)"><b>Teste grátis: ${d} ${d===1?"dia restante":"dias restantes"}</b><p class="mute sm" style="margin-top:2px">Tudo liberado até o fim do teste. Depois, o app fica bloqueado até você assinar.</p></div>`:`<div class="err" style="margin:10px 0"><b>${esc(w||"Seu teste grátis terminou.")}</b><br>Assine o plano mensal para continuar usando o app. Seus dados ficam guardados.</div>`)+`<div class="card" style="border-color:var(--g);border-width:2px"><div class="price"><b style="font-size:1.1875rem">Completo</b>${pro?'<span class="tag">Plano ativo</span>':""}</div><div style="margin:6px 0 10px"><b style="font-size:1.875rem">${R(PRICE)}</b><span class="mute"> /mês</span></div><p class="mute sm" style="margin-bottom:6px">Tudo liberado:</p>${PROL.map(li).join("")}${pro?`<button class="btn sec" style="margin-top:14px;color:var(--red)" onclick="cancelPlan()">Cancelar assinatura</button>`:`<button class="btn" style="margin-top:14px" onclick="subscribe()">Assinar por ${R(PRICE)}/mês</button><p class="mute sm" style="margin-top:8px;text-align:center">Cobrança mensal recorrente. Cancele quando quiser.</p>`}</div>`}
+});
+ckShow();
+(async()=>{
+ const rt=new URLSearchParams(location.search).get("reset");
+ if(rt){U.mode="reset";return go("auth")}
+ const pd=new URLSearchParams(location.search).get("paid");if(pd||new URLSearchParams(location.search).get("canceled"))history.replaceState(null,"",location.pathname);
+  if(tok()){try{let s=await api("/api/store");if(pd){for(let i=0;i<10&&s.plan!=="pro";i++){await new Promise(r=>setTimeout(r,1500));s=await api("/api/store")}}U.user={};if(s)U.photo=s.photo||"",delete s.photo;if(s&&s.products){S=s;ensTrial();return go("dash")}if(s){S.plan=s.plan;S.trial=s.trial}return go("cats")}catch{}}
+ go("welcome")})();
+</script>
+
+<script id="preco-certo-theme-script">
+(function(){
+ try{
+  var saved=localStorage.getItem("pc_theme");
+  if(saved==="dark"||saved==="light")document.documentElement.dataset.theme=saved;
+ }catch(e){}
+ function addButton(){
+  if(document.getElementById("pc-theme-toggle"))return;
+  var b=document.createElement("button");
+  b.id="pc-theme-toggle";
+  b.type="button";
+  b.setAttribute("aria-label","Alternar modo escuro");
+  b.title="Alternar modo claro/escuro";
+  function draw(){
+   var dark=document.documentElement.dataset.theme==="dark";
+   b.textContent=dark?"☀️":"🌙";
+   b.setAttribute("aria-pressed",String(dark));
+  }
+  b.addEventListener("click",function(){
+   var next=document.documentElement.dataset.theme==="dark"?"light":"dark";
+   document.documentElement.dataset.theme=next;
+   try{localStorage.setItem("pc_theme",next)}catch(e){}
+   draw();
+  });
+  document.body.appendChild(b);draw();
+ }
+ if(document.readyState==="loading")
+  document.addEventListener("DOMContentLoaded",addButton);
+ else addButton();
+})();
+</script>
+
+</body>
+</html>

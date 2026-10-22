@@ -3,7 +3,7 @@
   "buildCommand": null,
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://SEU-BACKEND.onrender.com/api/:path*" }
+    { "source": "/api/:path*", "destination": "https://preco-certo-api-vj6t.onrender.com/api/:path*" }
   ],
   "headers": [
     {

@@ -288,7 +288,17 @@ const mch=()=>`<div class="mch">${MES.map((n,i)=>`<button class="chip ${U.mes===
 const hd=(t,s)=>`<div class="hd"><div><h2 style="margin:0">${t}</h2><p class="mute sm">${s}</p></div></div>`;
 function chart(lb,ser){const mx=Math.max(1,...ser.flatMap(s=>s.v)),n=lb.length,gw=320/n,bw=Math.min(16,gw/ser.length-2);let x='<svg viewBox="0 0 340 150" style="width:100%;height:auto"><line x1="10" x2="330" y1="120" y2="120" stroke="#e4e5e2"/>';lb.forEach((l,i)=>{ser.forEach((s,j)=>{const h=Math.max(0,s.v[i]/mx*100);x+=`<rect x="${10+i*gw+gw/2-ser.length*(bw+2)/2+j*(bw+2)}" y="${120-h}" width="${bw}" height="${h}" rx="3" fill="${Array.isArray(s.c)?s.c[i]:s.c}"/>`});x+=`<text x="${10+i*gw+gw/2}" y="136" text-anchor="middle" font-size="9" fill="#6b6f76">${l}</text>`});return x+"</svg>"}
 const MV=["more","faq","sug","about","priv","terms","equipe","pess","sales","rep","ficha","phist","plans"],NEWV=["desp","fin","rank","dash","stock",...MV],NAVV=["home","desp","fin","dash","stock",...MV];
-const nav=()=>`<nav class="nav"><div>${[["dash","Início","chart"],["home","Produtos","tag"],["stock","Estoque","basket"],["desp","Despesas","wallet"],["fin","Financeiro","trend"],["more","Mais","dots"]].map(x=>`<button class="${(x[0]==="more"?MV.includes(U.view):U.view===x[0])?"on":""}" onclick="go('${x[0]}')">${ic(x[2],22)}<span>${x[1]}${!has()&&!MV.includes(x[0])?" "+ic("lock",11):""}</span></button>`).join("")}</div></nav>`;
+const nav=()=>`<nav class="nav"><div>${[["dash","Início","chart"],["home","Produtos","tag"],["stock","Estoque","basket"],["desp","Despesas","wallet"],["fin","Financeiro","trend"],["more","Mais
+<button id="pc-settings-entry" class="pc-settings-entry" type="button"
+ onclick="if(typeof go==='function'){go('settings')}else{alert('Abra Mais e procure Configurações.')}">
+ ⚙️ Configurações
+</button>
+<style>
+.pc-settings-entry{display:block;width:100%;text-align:left;padding:15px 16px;margin:12px 0;border:1px solid #d1d5db;border-radius:14px;background:var(--card,#fff);color:var(--text,#111827);font:inherit;font-weight:600;cursor:pointer}
+body.dark,body.dark-mode,[data-theme="dark"]{background:#080b10!important;color:#f3f4f6!important}
+body.dark .card,body.dark-mode .card,[data-theme="dark"] .card{background:#111722!important;color:#f3f4f6!important;border-color:#273244!important}
+</style>
+","dots"]].map(x=>`<button class="${(x[0]==="more"?MV.includes(U.view):U.view===x[0])?"on":""}" onclick="go('${x[0]}')">${ic(x[2],22)}<span>${x[1]}${!has()&&!MV.includes(x[0])?" "+ic("lock",11):""}</span></button>`).join("")}</div></nav>`;
 const VIEWS={
 desp:()=>{const m=U.mes,L=expList(m),f=F();V=VALS();return hd("Despesas mensais",MESF[m]+" de "+f.ano)+mch()+`<div class="row" style="margin:14px 0">${stat("Receita","rec","var(--g)")}${stat("Despesas","des","var(--red)")}${stat("Balanço","bal")}</div><h3 style="margin-top:6px">Despesas</h3><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:44px 1fr 88px 20px"><span class="lb">Dia</span><span class="lb">Descrição</span><span class="lb">Valor</span><span></span>${L.map((e,i)=>inp(`exp.${m}.${i}.d`,e.d)+inp(`exp.${m}.${i}.n`,e.n)+inp(`exp.${m}.${i}.v`,e.v,1)+`<button class="del2" onclick="delRow('exp.${m}',${i})" aria-label="Remover">${ic("trash",24)}</button>`).join("")}</div><button class="btn sec" style="margin-top:10px" onclick="addRow('exp.${m}',{d:'',n:'',v:0})">Adicionar despesa</button></div><h3>Faturamento bruto</h3><div class="card" style="padding:12px"><div class="g" style="grid-template-columns:22px repeat(4,minmax(0,1fr)) 70px"><span class="lb">Dia</span><span class="lb">Dinheiro</span><span class="lb">Cartão</span><span class="lb">Pix</span><span class="lb">Outro</span><span class="lb">Total</span>${Array.from({length:31},(_,i)=>{const d=i+1;return`<span class="lb">${d}</span>`+["din","car","pix","out"].map(k=>inp(`fat.${m}.${d}.${k}`,((f.fat[m]||{})[d]||{})[k],1)).join("")+`<b class="tt" data-k="d${d}">${V["d"+d]}</b>`}).join("")}<b class="tt">Total</b>${["tdin","tcar","tpix","tout"].map(k=>`<b class="tt" data-k="${k}">${V[k]}</b>`).join("")}<b class="tt" data-k="ttot">${V.ttot}</b></div></div>`},
 equipe:()=>{const m=U.mes,f=F();V=VALS();return hd("Controle de funcionários",MESF[m]+" de "+f.ano)+mch()+`<div style="margin:14px 0">${stat("Total do mês","st","var(--red)")}</div>`+f.staff.map((s,i)=>{const p=(f.pay[m]||{})[i]||{};return`<div class="card"><button class="del" onclick="delStaff(${i})" aria-label="Remover">${ic("trash",26)}</button><label style="margin-top:0">Funcionário</label><input type="text" style="width:calc(100% - 2.5rem)" value="${esc(s.n)}" oninput="fset('staff.${i}.n',this.value,0)"><div class="row"><div><label>Salário</label>${inpb(`staff.${i}.sal`,s.sal)}</div><div><label>Valor pago</label>${inpb(`pay.${m}.${i}.p`,p.p)}</div><div><label>13º/Férias</label>${inpb(`pay.${m}.${i}.f`,p.f)}</div></div><div class="price" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)"><span class="mute">Valor</span><b class="v" style="font-size:1.125rem" data-k="sv${i}">${V["sv"+i]}</b></div></div>`}).join("")+`<button class="btn sec" onclick="addRow('staff',{n:'Funcionário '+String(F().staff.length+1).padStart(2,'0'),sal:0})">Adicionar funcionário</button>`},
@@ -493,6 +503,51 @@ ckShow();
  if(document.readyState==="loading")
   document.addEventListener("DOMContentLoaded",addButton);
  else addButton();
+})();
+</script>
+
+
+<section id="pc-settings-page" style="display:none;padding:18px">
+ <h2>⚙️ Configurações</h2>
+ <p>Personalize sua conta e a aparência do Preço Certo.</p>
+ <label for="pc-theme-choice">Aparência do site</label>
+ <select id="pc-theme-choice" style="display:block;width:100%;padding:12px;margin:10px 0 18px;border-radius:10px">
+  <option value="light">Tema claro</option><option value="dark">Tema escuro</option>
+ </select>
+ <label for="pc-profile-photo">Foto de perfil</label>
+ <input id="pc-profile-photo" type="file" accept="image/*" style="display:block;margin:10px 0 18px">
+ <button type="button" id="pc-save-settings" style="padding:12px;border-radius:10px">Salvar preferências</button>
+ <hr style="margin:22px 0">
+ <h3>Conta</h3>
+ <p>A exclusão é permanente e remove seus dados. Confirme somente se realmente deseja continuar.</p>
+ <button type="button" id="pc-delete-account" style="padding:12px;border-radius:10px;background:#b91c1c;color:white">Excluir minha conta</button>
+</section>
+<script>
+(function(){
+ const key='preocerto_theme';
+ const choice=document.getElementById('pc-theme-choice');
+ function applyTheme(v){
+   document.documentElement.dataset.theme=v;
+   document.body.classList.toggle('dark',v==='dark');
+   document.body.classList.toggle('dark-mode',v==='dark');
+   try{localStorage.setItem(key,v)}catch(e){}
+ }
+ let saved='light';try{saved=localStorage.getItem(key)||'light'}catch(e){}
+ applyTheme(saved);if(choice)choice.value=saved;
+ if(choice)choice.addEventListener('change',()=>applyTheme(choice.value));
+ const save=document.getElementById('pc-save-settings');
+ if(save)save.addEventListener('click',()=>{applyTheme(choice.value);alert('Preferência de aparência salva neste dispositivo.')});
+ const del=document.getElementById('pc-delete-account');
+ if(del)del.addEventListener('click',async()=>{
+   if(!confirm('Excluir permanentemente sua conta e seus dados? Esta ação não pode ser desfeita.'))return;
+   if(!confirm('Confirma mais uma vez a exclusão definitiva?'))return;
+   try{
+     const token=localStorage.getItem('token')||localStorage.getItem('access_token');
+     const r=await fetch('/api/account',{method:'DELETE',headers:token?{Authorization:'Bearer '+token}:{},credentials:'include'});
+     if(r.ok){alert('Conta excluída.');location.reload()}
+     else alert('A exclusão ainda não está disponível no servidor. Nenhum dado foi excluído.');
+   }catch(e){alert('Não foi possível contactar o servidor. Nenhum dado foi excluído.')}
+ });
 })();
 </script>
 

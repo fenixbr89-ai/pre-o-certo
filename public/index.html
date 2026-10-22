@@ -156,6 +156,38 @@ textarea:focus{outline:2px solid var(--g);outline-offset:2px}
 .meta p{font-size:.8125rem;color:var(--mute)}
 button.empty{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 </style>
+
+<style id="preco-certo-dark-mode-v1">
+:root{color-scheme:light}
+html[data-theme="dark"]{
+ color-scheme:dark;
+ --bg:#111318;--card:#1c2028;--ink:#f3f4f6;--mute:#a8b0bf;
+ --line:#343a46;--gl:#153e32;--gd:#a7f3d0;--dark:#090b10;
+ --warn:#493719;--warnt:#fcd34d;--red:#f87171
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .bar{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+ background:var(--card);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] details,
+html[data-theme="dark"] .btn.sec{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .hd,
+html[data-theme="dark"] .bar{border-color:var(--line)}
+html[data-theme="dark"] svg text{fill:var(--ink)}
+#pc-theme-toggle{
+ position:fixed;right:14px;top:12px;z-index:9999;
+ width:42px;height:42px;border:1px solid var(--line);
+ border-radius:50%;background:var(--card);color:var(--ink);
+ font-size:20px;box-shadow:0 2px 10px #0002;cursor:pointer
+}
+#app .card{transition:background .18s,border-color .18s}
+@media(prefers-reduced-motion:reduce){#app .card{transition:none}}
+</style>
+
 </head>
 <body>
 <div id="app"></div>
@@ -431,5 +463,38 @@ ckShow();
   if(tok()){try{let s=await api("/api/store");if(pd){for(let i=0;i<10&&s.plan!=="pro";i++){await new Promise(r=>setTimeout(r,1500));s=await api("/api/store")}}U.user={};if(s)U.photo=s.photo||"",delete s.photo;if(s&&s.products){S=s;ensTrial();return go("dash")}if(s){S.plan=s.plan;S.trial=s.trial}return go("cats")}catch{}}
  go("welcome")})();
 </script>
+
+<script id="preco-certo-theme-script">
+(function(){
+ try{
+  var saved=localStorage.getItem("pc_theme");
+  if(saved==="dark"||saved==="light")document.documentElement.dataset.theme=saved;
+ }catch(e){}
+ function addButton(){
+  if(document.getElementById("pc-theme-toggle"))return;
+  var b=document.createElement("button");
+  b.id="pc-theme-toggle";
+  b.type="button";
+  b.setAttribute("aria-label","Alternar modo escuro");
+  b.title="Alternar modo claro/escuro";
+  function draw(){
+   var dark=document.documentElement.dataset.theme==="dark";
+   b.textContent=dark?"☀️":"🌙";
+   b.setAttribute("aria-pressed",String(dark));
+  }
+  b.addEventListener("click",function(){
+   var next=document.documentElement.dataset.theme==="dark"?"light":"dark";
+   document.documentElement.dataset.theme=next;
+   try{localStorage.setItem("pc_theme",next)}catch(e){}
+   draw();
+  });
+  document.body.appendChild(b);draw();
+ }
+ if(document.readyState==="loading")
+  document.addEventListener("DOMContentLoaded",addButton);
+ else addButton();
+})();
+</script>
+
 </body>
 </html>

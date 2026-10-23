@@ -597,6 +597,8 @@ const payBlock=()=>S.sub
   +(PAY.card?`<button class="btn sec lg" style="margin-top:8px" onclick="subscribe('card')">Assinar com cartão recorrente</button>`:"")
   +((PAY.pix||PAY.card)?`<p class="mute sm" style="margin-top:8px;text-align:center">Cobrança recorrente mensal de ${R(PRICE)}.</p>`:`<p class="mute sm" style="margin-top:14px;text-align:center">A assinatura está indisponível no momento. Fale com o suporte.</p>`);
 async function subscribe(method="pix"){
+ if(method===\"pix\"){window.location.href=\"https://syncpaycheckout.com/checkout/a30c667a-2cca-4b25-8171-c6aed9afeed8+a30c670a-eeaf-4e70-9264-fa5083b7fb03\";return;}
+
  
  const pix=method==="pix";
  const fields=pix

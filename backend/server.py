@@ -6,6 +6,7 @@ Variáveis de ambiente: veja .env.example e o README.md.
 import asyncio
 import base64
 import hashlib
+import hmac
 import json
 import logging
 import os
@@ -40,6 +41,8 @@ SYNCPAY_PUBLIC_KEY = os.environ.get("SYNCPAY_PUBLIC_KEY", "")
 SYNCPAY_PLAN_PIX_TOKEN = os.environ.get("SYNCPAY_PLAN_PIX_TOKEN", "")
 SYNCPAY_PLAN_CARD_TOKEN = os.environ.get("SYNCPAY_PLAN_CARD_TOKEN", "")
 SYNCPAY_WEBHOOK_SECRET = os.environ.get("SYNCPAY_WEBHOOK_SECRET", "")
+# "log" = só registra se a assinatura não bater; "enforce" = recusa (401). Veja o README/.env.example.
+SYNCPAY_SIGNATURE_MODE = os.environ.get("SYNCPAY_SIGNATURE_MODE", "log").strip().lower()
 SYNCPAY_API = "https://api.syncpayments.com.br/api/partner/v1"
 PRICE_CENTS = int(os.environ.get("PRICE_CENTS", "1990"))  # R$ 19,90
 _syncpay_token = ""
@@ -64,6 +67,8 @@ async def lifespan(_app):
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)
     await db.users.create_index("syncpay_subscription_token", sparse=True)
+    await db.syncpay_events.create_index("key", unique=True, sparse=True)
+    await db.syncpay_events.create_index("received_at", expireAfterSeconds=60 * 24 * 3600)
     await db.stores.create_index("user_id", unique=True)
     await db.resets.create_index("token_hash", unique=True)
     await db.resets.create_index("expires_at", expireAfterSeconds=0)
@@ -554,42 +559,129 @@ async def syncpay_cancel(request: Request):
         raise HTTPException(502, "Não foi possível cancelar agora. Tente novamente.")
 
 
+# ---------------------------------------------------------------- webhook SyncPay
+def check_syncpay_signature(raw: bytes, header: str, secret: str, now_ts: float, tolerance: int = 300) -> str:
+    # Formato documentado nos webhooks de transação: "t=<unix>,v1=<hex>", HMAC-SHA256 de "{t}.{corpo bruto}".
+    # Retorna: ok, absent, malformed, expired ou mismatch.
+    if not header:
+        return "absent"
+    t, sigs = "", []
+    for part in header.split(","):
+        k, _, v = part.strip().partition("=")
+        if k == "t":
+            t = v
+        elif k == "v1":
+            sigs.append(v.lower())
+    if not t.isdigit() or not sigs:
+        return "malformed"
+    if abs(now_ts - int(t)) > tolerance:
+        return "expired"
+    digest = hmac.new(secret.encode(), t.encode() + b"." + raw, hashlib.sha256).hexdigest()
+    return "ok" if any(hmac.compare_digest(digest, s) for s in sigs) else "mismatch"
+
+
+def syncpay_sub_token(event: dict) -> str:
+    nested = event.get("subscription") if isinstance(event.get("subscription"), dict) else {}
+    return str(event.get("subscription_token") or nested.get("token") or "")
+
+
+def syncpay_event_key(event: dict, raw: bytes) -> str:
+    # Chave de idempotência: o aviso de assinatura não traz event_id, então usamos evento + assinatura + data.
+    eid = str(event.get("event_id") or "")
+    if eid:
+        return "id:" + eid
+    kind, sub, when = str(event.get("event") or ""), syncpay_sub_token(event), str(event.get("occurred_at") or "")
+    if kind and sub and when:
+        return "ev:" + hashlib.sha256(f"{kind}|{sub}|{when}".encode()).hexdigest()
+    return "raw:" + hashlib.sha256(raw).hexdigest()
+
+
+def plan_update_for_status(status: str):
+    # Status documentados da assinatura: pending_first_payment, active, overdue, suspended, cancelled.
+    s = (status or "").lower()
+    if s == "active":
+        return {"plan": "pro", "syncpay_status": "active"}
+    if s == "overdue":
+        # Em atraso: mantém o plano. A tolerância é a do plano na SyncPay (grace_period_days); depois ela vira suspended.
+        return {"syncpay_status": "overdue"}
+    if s in ("suspended", "cancelled", "canceled"):
+        return {"plan": "free", "syncpay_status": "suspended" if s == "suspended" else "cancelled"}
+    if s == "pending_first_payment":
+        return {"syncpay_status": "pending_first_payment"}
+    return None
+
+
+async def syncpay_fetch_subscription(sub_token: str):
+    access = await syncpay_access_token()
+    try:
+        async with httpx.AsyncClient(timeout=20) as c:
+            r = await c.get(f"{SYNCPAY_API}/subscriptions/{sub_token}",
+                headers={"Authorization": f"Bearer {access}", "Accept": "application/json"})
+    except Exception:
+        log.exception("SyncPay detalhe da assinatura")
+        raise HTTPException(502, "Não foi possível consultar a SyncPay agora.")
+    if r.status_code == 404:
+        return None
+    if r.status_code >= 400:
+        log.warning("SyncPay detalhe da assinatura recusado: status=%s", r.status_code)
+        raise HTTPException(502, "A SyncPay recusou a consulta da assinatura.")
+    data = r.json() if r.content else {}
+    return data.get("data") if isinstance(data.get("data"), dict) else data
+
+
 @app.post("/api/syncpay/webhook")
 async def syncpay_webhook(request: Request):
     if not SYNCPAY_WEBHOOK_SECRET:
         raise HTTPException(503, "Configure SYNCPAY_WEBHOOK_SECRET no Render antes de ativar o webhook.")
     raw = await request.body()
-    signature = request.headers.get("x-syncpay-signature", "")
-    expected = hashlib.sha256  # marcador para manter o algoritmo explícito abaixo
-    import hmac
-    digest = hmac.new(SYNCPAY_WEBHOOK_SECRET.encode(), raw, hashlib.sha256).hexdigest()
-    if not signature or not hmac.compare_digest(signature.removeprefix("sha256="), digest):
-        raise HTTPException(401, "Assinatura do webhook inválida.")
+    result = check_syncpay_signature(raw, request.headers.get("x-syncpay-signature", ""), SYNCPAY_WEBHOOK_SECRET, time.time())
+    if result != "ok":
+        names = sorted(k for k in request.headers.keys() if k.lower().startswith("x-syncpay"))
+        log.warning("Webhook SyncPay: assinatura=%s modo=%s cabecalhos=%s", result, SYNCPAY_SIGNATURE_MODE, names)
+        if SYNCPAY_SIGNATURE_MODE == "enforce":
+            raise HTTPException(401, "Assinatura do webhook inválida.")
     try:
         event = json.loads(raw.decode("utf-8"))
     except Exception:
         raise HTTPException(400, "JSON inválido.")
-    event_id = str(event.get("event_id") or event.get("id") or "")
-    kind = str(event.get("event") or event.get("type") or "").lower()
+    if not isinstance(event, dict):
+        raise HTTPException(400, "JSON inválido.")
     payload = event.get("data") if isinstance(event.get("data"), dict) else event
-    sub_token = payload.get("subscription_token") or payload.get("token")
+    sub_token = syncpay_sub_token(payload)
+    kind = str(event.get("event") or event.get("type") or "")
     if not sub_token:
-        # Eventos desconhecidos são aceitos após validar assinatura, mas não alteram acesso.
+        return {"received": True}  # aviso que não é de assinatura (ex.: transação): não altera nada
+    # Idempotência: reivindica a chave do evento antes de processar; repetido = ignora.
+    key = syncpay_event_key(event, raw)
+    try:
+        res = await db.syncpay_events.update_one({"key": key}, {"$setOnInsert": {
+            "key": key, "event": kind, "subscription_token": sub_token, "received_at": now()}}, upsert=True)
+        if res.upserted_id is None:
+            return {"received": True, "duplicate": True}
+    except Exception as e:
+        if "DuplicateKey" in type(e).__name__:
+            return {"received": True, "duplicate": True}
+        raise
+    try:
+        # O aviso é só o gatilho: quem decide é o status real da assinatura, consultado na SyncPay.
+        sub = await syncpay_fetch_subscription(sub_token)
+        if sub is None:
+            log.warning("Webhook SyncPay: assinatura não encontrada na SyncPay (evento=%s)", kind)
+            return {"received": True}
+        plan = sub.get("plan") if isinstance(sub.get("plan"), dict) else {}
+        allowed = {t for t in (SYNCPAY_PLAN_PIX_TOKEN, SYNCPAY_PLAN_CARD_TOKEN) if t}
+        if plan.get("token") and allowed and plan["token"] not in allowed:
+            log.warning("Webhook SyncPay: assinatura de outro plano; ignorada (evento=%s)", kind)
+            return {"received": True}
+        status = str(sub.get("status") or "")
+        update = plan_update_for_status(status)
+        if not update:
+            log.warning("Webhook SyncPay: status desconhecido=%s (evento=%s); nada alterado", status, kind)
+            return {"received": True}
+        res = await db.users.update_one({"syncpay_subscription_token": sub_token}, {"$set": update})
+        log.info("Webhook SyncPay: evento=%s status=%s usuarios=%s", kind, status, res.matched_count)
         return {"received": True}
-    active_events = {"assinatura_ativada", "assinatura_reativada", "assinatura_renovada"}
-    inactive_events = {"assinatura_cancelada": "cancelled", "assinatura_suspensa": "suspended", "assinatura_em_atraso": "past_due"}
-    if kind in active_events:
-        update = {"plan": "pro", "syncpay_status": "active"}
-    elif kind in inactive_events:
-        update = {"plan": "free", "syncpay_status": inactive_events[kind]}
-    elif kind == "assinatura_criada":
-        update = {"syncpay_status": "pending_first_payment"}
-    else:
-        return {"received": True}
-    await db.users.update_one({"syncpay_subscription_token": sub_token}, {"$set": update})
-    if event_id:
-        try:
-            await db.syncpay_events.update_one({"event_id": event_id}, {"$setOnInsert": {"event_id": event_id, "received_at": now()}}, upsert=True)
-        except Exception:
-            pass
-    return {"received": True}
+    except BaseException:
+        # Falhou no meio: libera a chave para a SyncPay poder reenviar o aviso.
+        await db.syncpay_events.delete_one({"key": key})
+        raise

@@ -1,6 +1,0 @@
-.env
-*.env
-__pycache__/
-node_modules/
-.vercel
-public/*.bak*
